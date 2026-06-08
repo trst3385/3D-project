@@ -9,6 +9,7 @@ public class AttackTree : MonoBehaviour
 
     [Header("발사체 발사 위치")]
     public Transform firePoint;//발사체가 생성될 위치
+    public LineRenderer lineRenderer;//표적 조준
 
     [SerializeField] private List<Transform> enemiesInRange = new List<Transform>();//사거리 내 적들 리스트
     private float fireCountdown = 0f;//공격 대기 시간
@@ -31,6 +32,18 @@ public class AttackTree : MonoBehaviour
         if (fireCountdown > 0f)//매 프레임 델타 타임을 누적 감소시켜 공격 쿨타임(Cooldown)을 제어
         {
             fireCountdown -= Time.deltaTime;
+        }
+
+        //사거리 내 타겟 존재 여부에 따른 라인 렌더러 제어
+        if (target != null)
+        {
+            lineRenderer.enabled = true;
+            lineRenderer.SetPosition(0, firePoint.position); //시작점: 타워 발사 위치(firePoint)
+            lineRenderer.SetPosition(1, target.position);    //끝점: 타겟 위치
+        }
+        else
+        {
+            lineRenderer.enabled = false;//타겟이 없으면 라인 끄기
         }
 
         if (target != null && fireCountdown <= 0f)//현재 유효한 타겟이 존재하고 쿨타임이 만료되었을 때 발사 로직 실행

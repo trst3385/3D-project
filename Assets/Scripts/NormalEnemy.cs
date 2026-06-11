@@ -85,6 +85,7 @@ public class NormalEnemy : MonoBehaviour
         {
             player.TakeDamage(enemyData.Damage);
         }
+        GameManager.Instance.OnEnemyDefeated();//목표 처치 수 카운트 증가
         Destroy(gameObject);
     }
 }

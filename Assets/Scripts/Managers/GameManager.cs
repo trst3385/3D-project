@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         }
 
         //GameClearPanel은 하이어라키에 비활성화 된 상태라 다른 방식으로 찾아 자동연결(transform.Find)
-        GameObject canvasObj = GameObject.Find("Canvas");
+        GameObject canvasObj = GameObject.Find("UI Canvas");
         if (canvasObj != null)//UI Canvas 안에서 이름으로 자식 오브젝트 찾기
         {
             Transform panelTransform = canvasObj.transform.Find("GameClearPanel");//transform.Find는 비활성화된 자식도 찾아냄

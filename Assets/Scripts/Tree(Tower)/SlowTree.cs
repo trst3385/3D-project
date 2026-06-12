@@ -11,7 +11,7 @@ public class SlowTree : MonoBehaviour//AttackTree와 유사한 구조
         SphereCollider col = GetComponent<SphereCollider>();
         if (col != null)
         {
-            col.radius = towerData.Range;
+            col.radius = towerData.SlowRange;
         }
     }
 

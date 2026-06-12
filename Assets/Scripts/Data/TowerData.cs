@@ -14,5 +14,6 @@ public class TowerData : ScriptableObject
 
     [Header("Slow 나무")]
     public float SlowAmount = 0.5f; //0.5면 50% 느려짐
+    public float SlowRange = 5f;//트리거 콜라이더 크기 조절용
 
 }

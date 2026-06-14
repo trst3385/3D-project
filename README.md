@@ -28,21 +28,21 @@
 ```csharp
 void Start()
 {
-    // 1. 씬 내의 모든 캔버스(비활성화 포함)를 탐색
+    //1. 씬 내의 모든 캔버스(비활성화 포함)를 탐색
     Canvas[] allCanvases = Resources.FindObjectsOfTypeAll<Canvas>();
     
     foreach (Canvas canvas in allCanvases)
     {
-        // 2. 씬에 포함된 객체만 필터링 (프리팹 제외)
+        //2. 씬에 포함된 객체만 필터링 (프리팹 제외)
         if (canvas.gameObject.scene.name != null)
         {
-            // 3. 자식 중 "PausePanel" 이름을 가진 오브젝트를 탐색
+            //3. 자식 중 "PausePanel" 이름을 가진 오브젝트를 탐색
             Transform found = canvas.transform.Find("PausePanel");
             if (found != null)
             {
                 pausePanel = found.gameObject;
                 pausePanel.SetActive(false); // 초기 상태 비활성화
-                break; // 탐색 완료 후 종료
+                break;//탐색 완료 후 종료
             }
         }
     }
@@ -55,5 +55,9 @@ void Start()
 1. **유니티 검색 메커니즘 이해**: 호출 시점과 오브젝트의 활성/비활성 여부에 따라 탐색 함수들이 제각각 다른 결과를 도출함을 이해하였습니다. 상황에 맞는 적절한 API 선택이 중요함을 배웠습니다.
 2. **방어적 설계의 양면성**: if (null) 방어 코드는 버그를 막는 좋은 수단이지만, 근본적인 원인을 은폐할 수 있음을 깨달았습니다. 따라서 로직 오류를 빠르게 파악하기 위해 적절한 로그와 디버깅을 병행해야 한다는 점을 익혔습니다.
 3. **코드의 견고함**: 하드코딩된 참조를 제거하고 시스템이 스스로 환경을 인식하게 만드는 '자동 연결' 설계가 대규모 프로젝트의 유지보수 효율을 어떻게 극대화하는지 체감하였습니다.
+4. **방법론의 한계와 트레이드오프**:
+   4-1. Resources.FindObjectsOfTypeAll은 강력하지만, 씬 전체를 탐색하므로 프로젝트 규모가 매우 커질 경우 성능상 부하가 발생할 수 있습니다.
+   4-2. 또한, 특정 "이름(PausePanel)"에 의존하는 방식은 하드코딩된 문자열이 변경될 경우 대응이 어렵습니다.
+   4-3. 현재 단계에서는 유지보수성과 생산성 측면에서 가장 효율적이라 판단하여 채택했으나, 향후 프로젝트가 확장된다면 ScriptableObject 기반의 의존성 주입이나 Tag/Layer 시스템을 활용한, 보다 유연한 구조로 개선할 계획입니다.
 
 </details>

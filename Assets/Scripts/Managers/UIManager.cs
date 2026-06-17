@@ -3,9 +3,9 @@ using TMPro;
 using System.Collections;
 
 
-public class GameManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
-    public static GameManager Instance;//싱글톤 설정
+    public static UIManager Instance;//싱글톤 설정
 
     public int totalEnemyCount = 10;//라운드별 총 몬스터 수
     public int defeatedEnemyCount = 0;//처치한 몬스터 수

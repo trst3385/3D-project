@@ -6,11 +6,15 @@ public class TreeSlot : MonoBehaviour
 
     public void PlantTree(GameObject treePrefab)
     {
-        if (isOccupied) return;//이미 심어져 있으면 종료
+        if (isOccupied)//이미 심어져 있으면 종료
+        {
+            Debug.Log("여기는 이미 나무가 심어져 있어!");
+            return;
+        }
 
-        Instantiate(treePrefab, transform.position, Quaternion.identity);//나무 생성 (현재 슬롯 위치에)
+        Instantiate(treePrefab, transform.position, Quaternion.identity);//나무 생성
 
-        isOccupied = true;//슬롯 점유 상태로 변경
+        isOccupied = true;//배치된 상태로 변경
         Debug.Log("나무가 심어졌어!");
     }
 }

@@ -27,7 +27,7 @@ public class SlowTree : MonoBehaviour//AttackTree와 유사한 구조
         {
             if (enemy != null)
             {
-                NormalEnemy e = enemy.GetComponent<NormalEnemy>();
+                Enemy e = enemy.GetComponent<Enemy>();
                 if (e != null) e.SetSlow(towerData.SlowAmount);
             }
         }
@@ -46,7 +46,7 @@ public class SlowTree : MonoBehaviour//AttackTree와 유사한 구조
         if (other.CompareTag("Enemy"))
         {
             //리스트에서 제거하고 속도 복구
-            NormalEnemy e = other.GetComponent<NormalEnemy>();
+            Enemy e = other.GetComponent<Enemy>();
             if (e != null) e.ResetSpeed();
             enemiesInRange.Remove(other.transform);
         }

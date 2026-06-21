@@ -16,5 +16,7 @@ public class TreeSlot : MonoBehaviour
 
         isOccupied = true;//배치된 상태로 변경
         Debug.Log("나무가 심어졌어!");
+
+       
     }
 }

@@ -3,13 +3,13 @@ using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
-    private NormalEnemy enemyStats;//중심 스크립트의 SO 참조
+    private Enemy enemyStats;//중심 스크립트의 SO 참조
     private int currentHealth;//현재 체력
     private Slider hpSlider;
 
     void Awake()
     {
-        enemyStats = GetComponent<NormalEnemy>();//중심 스크립트(NormalEnemy) 가져오기
+        enemyStats = GetComponent<Enemy>();//중심 스크립트(NormalEnemy) 가져오기
 
         //체력바 찾기
         Transform hpBarTransform = transform.Find("EnemyHpBar");

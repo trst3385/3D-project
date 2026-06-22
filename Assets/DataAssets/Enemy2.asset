@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Enemy2
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   MaxHealth: 10
-  Speed: 10
+  Speed: 7
   Damage: 20

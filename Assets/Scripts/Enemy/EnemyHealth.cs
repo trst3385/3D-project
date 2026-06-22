@@ -59,9 +59,9 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        if (UIManager.Instance != null)//GameManager에게 적이 죽었음을 알림
+        if (GameManager.Instance != null)
         {
-            UIManager.Instance.OnEnemyDefeated();
+            GameManager.Instance.EnemyDefeated();//GameManager에 죽었다는 신호를 보냄
         }
         Destroy(gameObject);
     }

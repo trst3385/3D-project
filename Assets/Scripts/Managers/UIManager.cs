@@ -50,7 +50,14 @@ public class UIManager : MonoBehaviour
     }
     void UpdateUI(int current, int total)
     {
-        WaveText.text = $"처치: {current} / {total}";
+        if (current >= total)
+        {
+            WaveText.text = "보스 등장!";
+        }
+        else
+        {
+            WaveText.text = $"처치: {current} / {total}";
+        }
     }
     
 

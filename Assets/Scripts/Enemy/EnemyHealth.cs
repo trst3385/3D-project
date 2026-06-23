@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
+    public bool isBoss = false;//인스펙터에서 보스 프리팹만 체크해줘(보스는 카운트에 포함 되지 않게)
+    public event System.Action<bool> OnEnemyDie;//(GameManager 등) 몬스터 사망 이벤트 구독
+
     private Enemy enemyStats;//중심 스크립트의 SO 참조
     private int currentHealth;//현재 체력
     private Slider hpSlider;
@@ -59,10 +62,8 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.EnemyDefeated();//GameManager에 죽었다는 신호를 보냄
-        }
+        OnEnemyDie?.Invoke(isBoss);//(옵저버)구독자가 있다면 이벤트를 실행(Invoke)함, 보스면 true, 아니면 false를 전달
+
         Destroy(gameObject);
     }
 }

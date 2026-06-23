@@ -209,9 +209,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d49c8c2e21e890d48b456debf9113b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  bossPrefab: {fileID: 4565039326078445810, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
   enemyPrefab: {fileID: 8084569729449921211, guid: 46fa949b13a7bd043b4244b13cffd617, type: 3}
   spawnPoint: {fileID: 564724358}
-  spawnInterval: 3
+  spawnInterval: 1
 --- !u!4 &125126642
 Transform:
   m_ObjectHideFlags: 0
@@ -848,10 +849,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uD604\uC7AC/\uCD1D\uCC98\uCE58 \uC218"
+  m_text: "\uD604\uC7AC \uCC98\uCE58 \uC218/\uCD5C\uB300 \uCC98\uCE58 \uC218"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: cf3777afe364b754db35f7dad8aeb289, type: 2}
-  m_sharedMaterial: {fileID: 7877052387450817448, guid: cf3777afe364b754db35f7dad8aeb289, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 80bb2d21bece3ea4b8ca4f7e28f3ea56, type: 2}
+  m_sharedMaterial: {fileID: 7436790934468747508, guid: 80bb2d21bece3ea4b8ca4f7e28f3ea56, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2681,79 +2682,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!1001 &2049650726
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -13.581558
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.65
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -13.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2847078877591792203, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4565039326078445810, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_Name
-      value: Enemy2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7676094614757092267, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7676094614757092267, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0.63
-      objectReference: {fileID: 0}
-    - target: {fileID: 7743476039785697007, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7743476039785697007, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
 --- !u!1 &2082813536
 GameObject:
   m_ObjectHideFlags: 0
@@ -3275,4 +3203,3 @@ SceneRoots:
   - {fileID: 245719160}
   - {fileID: 94322295}
   - {fileID: 1998586892}
-  - {fileID: 2049650726}

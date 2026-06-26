@@ -19,9 +19,8 @@ public class UIManager : MonoBehaviour
         GameManager.Instance.OnEnemyCountChanged += UpdateUI;
         GameManager.Instance.OnGameClear += ShowGameClear;
 
-
-        UpdateUI(0, GameManager.Instance.totalEnemyCount);//실행할 때 초기값 전달
-    }                                                     //GameManager.Instance에 직접 접근해서 데이터를 넣어줘
+        UpdateUI(0, GameManager.Instance.currentRoundData.enemyCount);//GameManager의 SO 데이터의 enemyCount를 가져와서 실행할 때 초기값 전달
+    }                                                     
 
     void OnDestroy()
     {

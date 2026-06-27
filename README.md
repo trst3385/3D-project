@@ -113,6 +113,8 @@ private void SpawnEnemy()
     }
 }
 ```
+**3. 적용 모습 (Inspector)**
+![GameManager Inspector](./Images/GameManager.png)
 
 
 1. **데이터 구조화(ScriptableObject)**: `RoundData` SO를 생성하여 이곳에 등장할 몬스터의 프리팹, 스폰 간격 등 라운드 설정을 에셋 파일로 분리했습니다.

@@ -119,6 +119,7 @@ private void SpawnEnemy()
 }
 ```
 **적용 모습 (Inspector)**
+
 ![GameManager Inspector](./Images/GameManager.png)
 
 

@@ -84,6 +84,10 @@ void Start()
 3. **이벤트 기반 통신(Action/Delegate)**: `OnBossSpawn`, `OnGameClear` 등의 이벤트(옵저버 패턴)를 도입하여 매니저 간의 직접적인 참조를 제거하고 결합도를 낮췄습니다.
 4. **로직 단순화**: SO의 데이터 존재 여부(bossPrefab != null)만으로 로직을 판단하게 하여 불필요한 조건문을 제거했습니다.
 
+**적용 모습 (Inspector)**
+
+![GameManager Inspector](./Images/GameManager.png)
+
 **핵심 구현: 중앙 집중형 데이터 허브 (GameManager.cs)**
 ```csharp 
 public class GameManager : MonoBehaviour
@@ -118,9 +122,7 @@ private void SpawnEnemy()
     }
 }
 ```
-**적용 모습 (Inspector)**
 
-![GameManager Inspector](./Images/GameManager.png)
 
 
 ### 💡 배운 점 및 향후 계획

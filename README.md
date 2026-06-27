@@ -41,7 +41,7 @@ void Start()
             if (found != null)
             {
                 pausePanel = found.gameObject;
-                pausePanel.SetActive(false); // 초기 상태 비활성화
+                pausePanel.SetActive(false);//초기 상태 비활성화
                 break;//탐색 완료 후 종료
             }
         }
@@ -86,15 +86,15 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Data")]
-    public RoundData currentRoundData; // 데이터 허브의 중심
+    public RoundData currentRoundData;//데이터 허브의 중심
     
-    // 이벤트 기반 통신: 결합도 감소
+    //이벤트 기반 통신: 결합도 감소
     public event Action OnBossSpawn;
     public event Action OnGameClear;
 
     private void Awake() => Instance = this;
 
-    // 다른 매니저들이 데이터를 참조할 창구 (직접적인 필드 접근보다 안전함)
+    //다른 매니저들이 데이터를 참조할 창구 (직접적인 필드 접근보다 안전함)
     public RoundData GetCurrentRoundData() => currentRoundData;
     
     public void TriggerBossSpawn() => OnBossSpawn?.Invoke();
@@ -104,7 +104,7 @@ public class GameManager : MonoBehaviour
 ```csharp
 private void SpawnEnemy()
 {
-    // GameManager라는 '창구'를 통해서만 데이터를 가져옴
+    //GameManager라는 '창구'를 통해서만 데이터를 가져옴
     var data = GameManager.Instance.GetCurrentRoundData();
     
     if (data.enemyPrefab != null)

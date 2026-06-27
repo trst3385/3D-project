@@ -79,7 +79,7 @@ void Start()
 - **분산된 의존성**: 여러 매니저가 각기 다른 곳에서 데이터를 참조하여, 시스템 전체의 데이터가 여러 스크립트에 흩어져 있어, **어느 쪽이 최신 설정값인지 관리하기가 매우 번거로웠습니다.**
 
 ### 🛠 해결 과정
-1. 핵심 구현: 중앙 집중형 데이터 허브 (GameManager.cs)
+**1. 핵심 구현: 중앙 집중형 데이터 허브 (GameManager.cs)**
 ```csharp 
 public class GameManager : MonoBehaviour
 {
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
     public void TriggerBossSpawn() => OnBossSpawn?.Invoke();
 }
 ```
-2. 활용 예시: EnemySpawner.cs (결합도 감소)
+**2. 활용 예시: EnemySpawner.cs (결합도 감소)**
 ```csharp
 private void SpawnEnemy()
 {

@@ -92,7 +92,7 @@ void Start()
 ```csharp 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    public static GameManager Instance;
 
     [Header("Data")]
     public RoundData currentRoundData;//데이터 허브의 중심

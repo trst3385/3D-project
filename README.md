@@ -79,7 +79,12 @@ void Start()
 - **분산된 의존성**: 여러 매니저가 각기 다른 곳에서 데이터를 참조하여, 시스템 전체의 데이터가 여러 스크립트에 흩어져 있어, **어느 쪽이 최신 설정값인지 관리하기가 매우 번거로웠습니다.**
 
 ### 🛠 해결 과정
-**1. 핵심 구현: 중앙 집중형 데이터 허브 (GameManager.cs)**
+1. **데이터 구조화(ScriptableObject)**: `RoundData` SO를 생성하여 이곳에 등장할 몬스터의 프리팹, 스폰 간격 등 라운드 설정을 에셋 파일로 분리했습니다.
+2. **중앙 집중형 허브 설계**: `GameManager`를 데이터 허브로 구축하여 이 매니자 스크립트에서만 `RoundData` SO를 연결하고, 나머지 매니저가 `GameManager`를 통해서만 데이터에 접근하도록 구조를 변경했습니다.
+3. **이벤트 기반 통신(Action/Delegate)**: `OnBossSpawn`, `OnGameClear` 등의 이벤트(옵저버 패턴)를 도입하여 매니저 간의 직접적인 참조를 제거하고 결합도를 낮췄습니다.
+4. **로직 단순화**: SO의 데이터 존재 여부(bossPrefab != null)만으로 로직을 판단하게 하여 불필요한 조건문을 제거했습니다.
+
+**핵심 구현: 중앙 집중형 데이터 허브 (GameManager.cs)**
 ```csharp 
 public class GameManager : MonoBehaviour
 {
@@ -100,7 +105,7 @@ public class GameManager : MonoBehaviour
     public void TriggerBossSpawn() => OnBossSpawn?.Invoke();
 }
 ```
-**2. 활용 예시: EnemySpawner.cs (결합도 감소)**
+**활용 예시: EnemySpawner.cs (결합도 감소)**
 ```csharp
 private void SpawnEnemy()
 {
@@ -113,15 +118,8 @@ private void SpawnEnemy()
     }
 }
 ```
-**3. 적용 모습 (Inspector)**
-
+### 🛠 적용 모습 (Inspector)
 ![GameManager Inspector](./Images/GameManager.png)
-
-
-1. **데이터 구조화(ScriptableObject)**: `RoundData` SO를 생성하여 이곳에 등장할 몬스터의 프리팹, 스폰 간격 등 라운드 설정을 에셋 파일로 분리했습니다.
-2. **중앙 집중형 허브 설계**: `GameManager`를 데이터 허브로 구축하여 이 매니자 스크립트에서만 `RoundData` SO를 연결하고, 나머지 매니저가 `GameManager`를 통해서만 데이터에 접근하도록 구조를 변경했습니다.
-3. **이벤트 기반 통신(Action/Delegate)**: `OnBossSpawn`, `OnGameClear` 등의 이벤트(옵저버 패턴)를 도입하여 매니저 간의 직접적인 참조를 제거하고 결합도를 낮췄습니다.
-4. **로직 단순화**: SO의 데이터 존재 여부(bossPrefab != null)만으로 로직을 판단하게 하여 불필요한 조건문을 제거했습니다.
 
 
 ### 💡 배운 점 및 향후 계획

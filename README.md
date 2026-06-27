@@ -62,9 +62,65 @@ void Start()
 
 </details>
 
+
 <details>
 <summary><b>유연한 게임 시스템 구축을 위한 리팩토링 프로젝트</b></summary> 
       
 ![Architecture](https://img.shields.io/badge/DataDriven-Design-orange)
       
 이 프로젝트는 하드코딩된 로직을 ScriptableObject 기반의 데이터 구조로 전환하여 **시스템의 확장성과 코드의 유지보수성** 을 높이는 데 중점을 두고 개발되었습니다.<br/>
+
+### 🚨 문제점
+- 몬스터 스탯, 스폰 속도 등 라운드별 설정값이 `EnemySpawner`와 `GameManager` 매니저 스크립트에 하드코딩되어 있어, 수치 변경 시마다 다수의 스크립트를 수정해야 하는 비효율이 발생했습니다.
+- 이런 방식은 매니저 간 데이터 참조가 분산되어 있어 데이터 일관성을 유지하기 어렵고, 코드의 결합도(Coupling)가 높아 유지보수에 어려움이 있었습니다.
+
+### 🔍 원인 분석
+- **데이터와 로직의 혼재**: 데이터값이 코드 내부에 직접 명시되어 있어, 게임 디자인 변경이 코드 수정으로 이어지는 구조였습니다.
+- **분산된 의존성**: 여러 매니저가 각기 다른 곳에서 데이터를 참조하여, 시스템 전체의 데이터가 여러 스크립트에 흩어져 있어, **어느 쪽이 최신 설정값인지 관리하기가 매우 번거로웠습니다.**
+
+### 🛠 해결 과정
+```csharp
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance { get; private set; }
+
+    [Header("Data")]
+    public RoundData currentRoundData; // 데이터 허브의 중심
+    
+    // 이벤트 기반 통신: 결합도 감소
+    public event Action OnBossSpawn;
+    public event Action OnGameClear;
+
+    private void Awake() => Instance = this;
+
+    // 다른 매니저들이 데이터를 참조할 창구 (직접적인 필드 접근보다 안전함)
+    public RoundData GetCurrentRoundData() => currentRoundData;
+    
+    public void TriggerBossSpawn() => OnBossSpawn?.Invoke();
+}
+```
+```
+private void SpawnEnemy()
+{
+    // GameManager라는 '창구'를 통해서만 데이터를 가져옴
+    var data = GameManager.Instance.GetCurrentRoundData();
+    
+    if (data.enemyPrefab != null)
+    {
+        Instantiate(data.enemyPrefab, spawnPoint.position, Quaternion.identity);
+    }
+}
+```
+
+
+1. **데이터 구조화(ScriptableObject)**: `RoundData` SO를 생성하여 이곳에 등장할 몬스터의 프리팹, 스폰 간격 등 라운드 설정을 에셋 파일로 분리했습니다.
+2. **중앙 집중형 허브 설계**: `GameManager`를 데이터 허브로 구축하여 이 매니자 스크립트에서만 `RoundData` SO를 연결하고, 나머지 매니저가 `GameManager`를 통해서만 데이터에 접근하도록 구조를 변경했습니다.
+3. **이벤트 기반 통신(Action/Delegate)**: `OnBossSpawn`, `OnGameClear` 등의 이벤트(옵저버 패턴)를 도입하여 매니저 간의 직접적인 참조를 제거하고 결합도를 낮췄습니다.
+4. **로직 단순화**: SO의 데이터 존재 여부(bossPrefab != null)만으로 로직을 판단하게 하여 불필요한 조건문을 제거했습니다.
+
+
+### 💡 배운 점 및 향후 계획
+- **확장성 확보**: 이제 라운드 추가 시 코드 수정 없이 `RoundData` SO에셋 파일만 생성하면 되는 유연한 시스템을 구축했습니다.
+- **설계의 중요성**: 기능 구현보다 '어떻게 시스템을 설계할 것인가', '다른 개발자들도 편하게 이 스크립트를 확인할 수 있는가' 가 개발자의 핵심 역량임을 재확인했습니다.
+- **향후 개선 계획**: 현재는 라운드 데이터를 배열`(RoundData[])` 로 관리할 예정이며, 추후 인덱스 기반 자동 전환 로직을 구현하여 완전히 자동화된 웨이브 시스템을 완성할 계획입니다.
+</details>

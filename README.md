@@ -1,8 +1,4 @@
 # 3D project
-![Unity](https://img.shields.io/badge/Unity-2022.3LTS-blue)
-![C#](https://img.shields.io/badge/C-sharp-green)
-![Architecture](https://img.shields.io/badge/DataDriven-Design-orange)
-
 
 
 <details>
@@ -67,6 +63,6 @@ void Start()
 </details>
 
 <details>
-<summary><b>유연한 게임 시스템 구축을 위한 리팩토링 프로젝트</b></summary>
+<summary><b>유연한 게임 시스템 구축을 위한 리팩토링 프로젝트</b></summary> ![Architecture](https://img.shields.io/badge/DataDriven-Design-orange)
       
 이 프로젝트는 하드코딩된 로직을 ScriptableObject 기반의 데이터 구조로 전환하여 **시스템의 확장성과 코드의 유지보수성** 을 높이는 데 중점을 두고 개발되었습니다.<br/>

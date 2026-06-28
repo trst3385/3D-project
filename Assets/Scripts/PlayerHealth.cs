@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     [Header("데이터")]
-    public PlayerData playerData;//SO 연결
+    public PlayerData playerData;//SO 연결    
 
-    private int currentHealth; //현재 실시간 체력
+    private int currentHealth;    //현재 실시간 체력
     private Slider playerHpSlider;//플레이어 체력바 UI 참조
 
     void Awake()
@@ -56,7 +56,7 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0)//체력이 0이 되면
         {
             Debug.Log("플레이어 사망!");
-            //곧 게임 오버 로직 추가 예정(옵저버 패턴 방식)
+            GameManager.Instance.TriggerGameOver();//GameManager를 통해 게임 오버를 알림
         }
     }
 }

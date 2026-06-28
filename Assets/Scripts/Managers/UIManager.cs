@@ -3,7 +3,7 @@ using TMPro;
 using System.Collections;
 
 
-public class UIManager : MonoBehaviour
+public class UIManager : MonoBehaviour//InGameUI(WaveText 등)와 GameClearPanelUI 스크립트 분리 예정
 {
     [Header("WaveText연결. 자동연결")]
     public TextMeshProUGUI WaveText;

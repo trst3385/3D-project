@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,9 +10,13 @@ public class GameManager : MonoBehaviour
 
     private int defeatedEnemyCount = 0;//처치한 몬스터 수
 
-    public event System.Action<int, int> OnEnemyCountChanged;//UI한테 "나 숫자 바뀌었어!"라고 알려주는 이벤트
-    public event System.Action OnGameClear;                  //UI한테 "게임 끝났어!"라고 알려주는 이벤트
-    public event System.Action OnBossSpawn;                  //보스 몬스터 등장 이벤트
+    //------------이벤트------------------------------
+    public event Action<int, int> OnEnemyCountChanged;//UI한테 "나 숫자 바뀌었어!"라고 알려주는 이벤트
+    public event Action OnGameClear;                  //UI한테 "게임 끝났어!"라고 알려주는 이벤트
+    public event Action OnBossSpawn;                  //보스 몬스터 등장 이벤트
+
+    public event Action OnGameOver;//게임 오버 이벤트
+    //------------------------------------------------
 
     void Awake() => Instance = this;
 
@@ -38,5 +44,11 @@ public class GameManager : MonoBehaviour
         {
             OnBossSpawn?.Invoke();//여기서 보스 소환 신호를 보내거나, 다음 라운드 로직을 실행
         }
+    }
+
+    public void TriggerGameOver()//플레이어 사망 시 게임 오버 창 생성 이벤트
+    {
+        Debug.Log("게임 오버 이벤트 발생!");
+        OnGameOver?.Invoke();
     }
 }

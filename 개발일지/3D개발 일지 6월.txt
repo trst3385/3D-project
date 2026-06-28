@@ -463,6 +463,21 @@ README 작성: 시스템 구조의 체질 개선 - 데이터 주도 설계(Data-
    3. 결과: "기능 구현보다 중요한 건 간편한 설계를 통한 확장성 확보"라는 점을 확인. 특히 README에 작성 중 나의 고민 과정을 기술하면서, 내가 왜 이런 설계를 했는지 스스로 논리를 재점검하는 계기가 됐지
 
 
+
+6/28
+플레이어 체력 0이 될 시 게임 오버 시스템 구현
+
+- 이벤트 기반(옵저버) 설계 도입: GameManager 스크립트에 OnGameOver 이벤트를 생성하여, PlayerHealth와 새로 추가한 GameOverManager 스크립트간의 직접적인 참조를 제거함. (결합도 감소)
+- 런타임 동적 UI 바인딩: 씬 상의 Canvas와 그 자식인 GameOverPanel을 동적으로 찾기 위해 Resources.FindObjectsOfTypeAll과 transform.Find를 조합하여 구현. Inspector 의존성을 완전히 배제하고 코드 중심의 제어를 실현.
+   1.  Resources.FindObjectsOfTypeAll<Canvas>()
+   2. Transform found = mainCanvas.transform.Find("GameOverPanel"); = 찾은 UI Canvas란 이름의 UI오브젝트의 자식에서 GameOverPanel을 찾아서 연결
+- 게임 루프 완성: 플레이어 체력이 0이되어 게임오버 창이 뜨면 Time.timeScale을 제어하여 일시정지 기능을 구현하고, ReStartButton을 추가해 SceneManager.LoadScene을 통해 게임 재시작 루프를 정상적으로 작동하게 함.
+
+- 의존성 분리: 작년때 나는 단순히 스크립트 간 연결에만 집중했다면, 이제는 '이벤트 구독 패턴(Observer Pattern)'을 직접 적용하며 컴포넌트 간 통신을 독립시키고있어. 이 과정에서 결합도를 낮추는 것이 유지보수에 얼마나 중요한지 리펙토링 할때마다 느껴.
+- 비활성화 오브젝트 제어: UI를 매번 활성화해두지 않고 초기에는 비활성화 상태로 유지하면서, 코드를 통해 필요할 때만 찾는 최적화 방식을 학습했다. 하드코딩이나 인스펙터 수동 연결에 의존하지 않는 '동적 바인딩'의 필요성을 경험.
+   1. gameOverPanel.SetActive(false);//시작 시 비활성화
+
+
 **나중에 3D작품에 적을 내용**
 1. 중심 스크립트 하나에 SO를 적용하고 컴포넌트로 같이 연결된 다른 스크립트는 이 중심 스크립트에 연결된 SO를 받아오기. (유지보수 향상 목적, 한 스크립트에서만 수정하면 되는 편리함)
 2. 나열한 기술들(싱글톤, 옵저버, 트랜지션 등)을 모두 다 넣으려고 하면 배가 산으로 가. 면접관은 "이 기술을 왜 썼는가?"를 궁금해해

@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     private int defeatedEnemyCount = 0;//처치한 몬스터 수
 
     //------------이벤트------------------------------
-    public event Action<int, int> OnEnemyCountChanged;//UI한테 "나 숫자 바뀌었어!"라고 알려주는 이벤트
+    public event Action<int, int> OnEnemyCountChanged;//UI한테 "몬스터 처치해서 카운트 올릴게!"라고 알려주는 이벤트
     public event Action OnGameClear;                  //UI한테 "게임 끝났어!"라고 알려주는 이벤트
     public event Action OnBossSpawn;                  //보스 몬스터 등장 이벤트
 

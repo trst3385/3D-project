@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0d42eb80d307654ab28b919be166816, type: 3}
+  m_Name: 2Round Data
+  m_EditorClassIdentifier: Assembly-CSharp::RoundData
+  enemyPrefab: {fileID: 8084569729449921211, guid: 46fa949b13a7bd043b4244b13cffd617, type: 3}
+  enemyCount: 20
+  spawnInterval: 1.5
+  bossPrefab: {fileID: 4565039326078445810, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}

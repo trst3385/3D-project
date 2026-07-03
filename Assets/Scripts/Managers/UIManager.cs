@@ -15,6 +15,9 @@ public class UIManager : MonoBehaviour//InGameUI(WaveText 등)와 GameClearPanel
 
         GameManager.Instance.OnEnemyCountChanged += UpdateUI;//GameManager가 던지는 신호를 구독
         UpdateUI(0, GameManager.Instance.currentRoundData.enemyCount);//GameManager의 SO 데이터의 enemyCount를 가져와서 실행할 때 초기값 전달
+
+        //라운드가 바뀌면 WaveText UI도 새 데이터에 맞게 초기화
+        GameManager.Instance.OnRoundChanged += (newData) => {UpdateUI(0, newData.enemyCount);};
     }                                                     
 
 

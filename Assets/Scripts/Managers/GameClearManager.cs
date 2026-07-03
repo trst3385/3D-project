@@ -8,7 +8,7 @@ public class GameClearManager : MonoBehaviour
 
     void Awake()
     {
-        FindGameClearPanel();//1. UI 자동 연결 실행
+        FindGameClearPanel();//1. UI 자동 연결 (캐싱으로 Find()를 한번만 찾아 클래스 메모리에 저장, 잦은 Find() 사용은 CPU 부하 원인!)
     }
 
     void Start()
@@ -56,7 +56,6 @@ public class GameClearManager : MonoBehaviour
     {
         StartCoroutine(ShowRoutine());
     }
-
     IEnumerator ShowRoutine()
     {
         yield return new WaitForSeconds(1.0f);
@@ -66,5 +65,19 @@ public class GameClearManager : MonoBehaviour
             Time.timeScale = 0f;
             Debug.Log("게임 클리어!");
         }
+    }
+
+    public void OnClickNextRound()
+    {
+        Time.timeScale = 1f;//시간 다시 흐르게 하기
+
+        if (gameClearPanel != null)//게임클리어 패널 끄기
+        {
+            gameClearPanel.SetActive(false);
+        }
+
+        GameManager.Instance.LoadNextRound();//게임 매니저에게 다음 라운드 로직 실행 요청
+
+        Debug.Log("다음 라운드로 이동!");
     }
 }

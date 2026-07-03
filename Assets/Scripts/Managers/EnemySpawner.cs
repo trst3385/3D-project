@@ -16,6 +16,7 @@ public class EnemySpawner : MonoBehaviour
         Debug.Log("스폰 간격: " + data.spawnInterval);
 
         GameManager.Instance.OnBossSpawn += SpawnBoss;//보스 소환 이벤트 구독
+        GameManager.Instance.OnRoundChanged += StartNewRound;//새로운 라운드 이벤트 구독
         StartCoroutine(SpawnRoutine());//반복해서 적을 생성하는 코루틴 시작
     }
 
@@ -61,6 +62,15 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    private void StartNewRound(RoundData newData)//새로운 라운드 시작
+    {
+        ClearAllEnemies();     //이전 라운드 몬스터 정리
+        isBossSpawned = false; //보스 잡힌 상태 초기화
+        StopAllCoroutines();   //이전 라운드의 코루틴 멈춤
+        StartCoroutine(SpawnRoutine());//새로운 코루틴 시작
+        Debug.Log("새로운 라운드 시작! 데이터 적용 완료!");
+    }
+
     private IEnumerator SpawnRoutine()
     {
         while (!isBossSpawned)// 보스가 등장하기 전까지는 계속 일반 몬스터 생성
@@ -72,4 +82,12 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    public void ClearAllEnemies()//다음 라운드로 넘어갈때 남아있을 수도 있는 몬스터들 전부 삭제
+    {
+        EnemyHealth[] allEnemies = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);//맵에 있는 모든 적을 찾아 삭제
+        foreach (EnemyHealth enemy in allEnemies)
+        {
+            if (enemy != null) Destroy(enemy.gameObject);
+        }
+    }
 }

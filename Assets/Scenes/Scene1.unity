@@ -1066,12 +1066,12 @@ Transform:
   m_Children:
   - {fileID: 1776907227}
   - {fileID: 1631765521}
+  - {fileID: 316417934}
   - {fileID: 125126642}
   - {fileID: 1989272757}
   - {fileID: 1092097355}
   - {fileID: 955355120}
   - {fileID: 493830028}
-  - {fileID: 316417934}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &465248958
@@ -3234,7 +3234,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1775916052}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 316417935}
+        m_TargetAssemblyTypeName: GameClearManager, Assembly-CSharp
+        m_MethodName: OnClickNextRound
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1775916052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3317,7 +3329,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4acc13c8c335ee84a817f4d33a3173a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  currentRoundData: {fileID: 11400000, guid: 5634a33b55aa6644baf8d5085d83b684, type: 2}
+  currentRoundData: {fileID: 0}
+  roundDatas:
+  - {fileID: 11400000, guid: 5634a33b55aa6644baf8d5085d83b684, type: 2}
+  - {fileID: 11400000, guid: 042655883f164814c904aaec909e9392, type: 2}
+  currentRoundIndex: 0
 --- !u!1 &1811213966
 GameObject:
   m_ObjectHideFlags: 0

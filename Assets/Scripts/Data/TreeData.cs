@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Tower Data", menuName = "ScriptableObject/Tower Data")]
-public class TowerData : ScriptableObject
+public class TreeData : ScriptableObject
 {
+    [Header("방어 설정")]
+    public int MaxHitCount = 3;//몇 번 맞으면 파괴될 것인가?
+
     [Header("Attack 나무")]
     public float AttackInterval = 1f;//n초마다 공격
     public float Range = 10f;//트리거 콜라이더 크기 조절용

@@ -2,10 +2,16 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class AttackTree : MonoBehaviour
-{
+public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 위해 클래스 이름 옆에 추가.
+{                                             //"너 ITree 약속 지키기로 했지? 그럼 여기에 ITree인터페이스의 GetTreeData 함수를 반드시 만들어",
+                                              //라고 강제하기 시작해. 안 만들면 에러를 발생해.
+    public TreeData GetTreeData()//인터페이스(ITree)에서 시킨 대로, 데이터를 외부로 전달해주는 '전용 통로'를 만듦.
+    {                            //다른 스크립트가 "GetTreeData()"라고 부르면, 내 데이터SO(treeData)를 넘겨줌.
+        return treeData;
+    }
+
     [Header("데이터")]
-    public TowerData towerData;//Tower Data SO연결
+    public TreeData treeData;//Tower Data SO 데이터 연결
 
     [Header("발사체 발사 위치")]
     public Transform firePoint;//발사체가 생성될 위치
@@ -21,7 +27,7 @@ public class AttackTree : MonoBehaviour
         SphereCollider col = GetComponent<SphereCollider>();
         if (col != null)//트리거 콜라이더 사이즈 자동 설정 (SO의 range 사용)
         {
-            col.radius = towerData.Range;//range변수를 우선으로 사거리를 정해서 콜라이더의 Radius값과 달라도 range값을 우선으로 정함
+            col.radius = treeData.Range;//range변수를 우선으로 사거리를 정해서 콜라이더의 Radius값과 달라도 range값을 우선으로 정함
         }                               
     }
 
@@ -49,7 +55,7 @@ public class AttackTree : MonoBehaviour
         if (target != null && fireCountdown <= 0f)//현재 유효한 타겟이 존재하고 쿨타임이 만료되었을 때 발사 로직 실행
         {
             Shoot();
-            fireCountdown = towerData.AttackInterval;//다음 공격을 위해 쿨타임 재설정
+            fireCountdown = treeData.AttackInterval;//다음 공격을 위해 쿨타임 재설정
         }
     }
 
@@ -106,12 +112,12 @@ public class AttackTree : MonoBehaviour
             return;
         }
 
-        GameObject bulletGO = Instantiate(towerData.BulletPrefab, firePoint.position, firePoint.rotation);//발사체 생성(Instantiate)
+        GameObject bulletGO = Instantiate(treeData.BulletPrefab, firePoint.position, firePoint.rotation);//발사체 생성(Instantiate)
         Bullet bullet = bulletGO.GetComponent<Bullet>();
 
         if (bullet != null)//발사체에게 타겟을 지정해줌
         {
-            bullet.Initialize(target, towerData.BulletSpeed, towerData.BulletDamage);
+            bullet.Initialize(target, treeData.BulletSpeed, treeData.BulletDamage);
         }
     }
 }

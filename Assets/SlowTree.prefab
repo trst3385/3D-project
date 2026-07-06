@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6060932722414185210}
   - component: {fileID: 2945182395407522207}
+  - component: {fileID: -1014788774904847301}
   - component: {fileID: 406463426515508831}
   - component: {fileID: 9097446485556393064}
   m_Layer: 0
@@ -59,6 +60,19 @@ LODGroup:
     renderers:
     - renderer: {fileID: 3326940410799749056}
   m_Enabled: 1
+--- !u!114 &-1014788774904847301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493915652956472119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f395b9d165dba5b4abec5d336a0998cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TreeHealth
+  treeData: {fileID: 0}
 --- !u!114 &406463426515508831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c73ef7251efec624698d684b76a74073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlowTower
-  towerData: {fileID: 11400000, guid: 854ab08952cbf43448643083736caa58, type: 2}
+  treeData: {fileID: 0}
 --- !u!135 &9097446485556393064
 SphereCollider:
   m_ObjectHideFlags: 0

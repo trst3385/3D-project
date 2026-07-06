@@ -1,9 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-public class SlowTree : MonoBehaviour//AttackTree와 유사한 구조
+ 
+public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, 인터페이스 사용을 위해 클래스 이름 옆에 , ITree를 추가
 {
-    public TowerData towerData;
+    public TreeData GetTreeData()//인터페이스(ITree)에서 시킨 대로, 데이터를 외부로 전달해주는 '전용 통로'를 만듦.
+    {                            //다른 스크립트가 "GetTreeData()"라고 부르면, 내 데이터SO(treeData)를 넘겨줌.
+        return treeData;
+    }
+
+    [Header("데이터")]
+    public TreeData treeData;//데이터 참조
     private List<Transform> enemiesInRange = new List<Transform>();
 
     void Start()
@@ -11,7 +17,7 @@ public class SlowTree : MonoBehaviour//AttackTree와 유사한 구조
         SphereCollider col = GetComponent<SphereCollider>();
         if (col != null)
         {
-            col.radius = towerData.SlowRange;
+            col.radius = treeData.SlowRange;
         }
     }
 
@@ -28,7 +34,7 @@ public class SlowTree : MonoBehaviour//AttackTree와 유사한 구조
             if (enemy != null)
             {
                 Enemy e = enemy.GetComponent<Enemy>();
-                if (e != null) e.SetSlow(towerData.SlowAmount);
+                if (e != null) e.SetSlow(treeData.SlowAmount);
             }
         }
     }

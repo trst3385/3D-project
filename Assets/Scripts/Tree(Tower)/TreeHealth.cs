@@ -29,7 +29,6 @@ public class TreeHealth : MonoBehaviour
 
         if (_currentHitCount >= _treeData.MaxHitCount)
         {
-            Debug.Log("타워 파괴됨!");
             DestroyTower();//0이 되면 파괴
         }
     }

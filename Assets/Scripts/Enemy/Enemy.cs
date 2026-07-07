@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Security.Cryptography;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour    
@@ -12,13 +13,15 @@ public class Enemy : MonoBehaviour
     private EnemyMovement movement;//이동 로직 컴포넌트
     private float currentSpeed;//현재 속도
 
-    //private float baseSpeed;//슬로우 상태 이후 원래 속도 보존용
-    //private float currentSpeed;//현재 적용된 속도
+    private EnemyAttack attack;
+ 
 
 
     void Awake()
     {
+        attack = GetComponent<EnemyAttack>();
         movement = GetComponent<EnemyMovement>();
+
         currentSpeed = enemyData.Speed;
     }
 

@@ -1,10 +1,17 @@
-﻿using UnityEngine;
+﻿    using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Enemy Data", menuName = "ScriptableObject/Enemy Data")]
+    [CreateAssetMenu(fileName = "New Enemy Data", menuName = "ScriptableObject/Enemy Data")]
 
 public class EnemyData : ScriptableObject
 {
     public int MaxHealth = 10;
     public float Speed = 5f;
-    public int Damage = 10;
+    public int Damage = 10;//몬스터가 WayPoint 끝에 닿으면 플레이어 HP 감소
+
+    [Header("공격 데이터")]
+    public float AttackRange = 5f;
+    public float AttackInterval = 2f;
+    public int TreeDamage = 1;//나무에게 줄 데미지 (혹은 맞은 횟수 처리)
+
+
 }

@@ -238,6 +238,7 @@ GameObject:
   - component: {fileID: 167758683205965749}
   - component: {fileID: 4502871742952071379}
   - component: {fileID: 541191319907527301}
+  - component: {fileID: 7858196088163182736}
   - component: {fileID: 3386187844176169650}
   - component: {fileID: 3677865797882587451}
   m_Layer: 0
@@ -351,6 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d54e337a287af54e94327e1237e2cfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  isBoss: 0
 --- !u!114 &541191319907527301
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,6 +365,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9435affe5f0b11a48a0be2dc37bd314b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+--- !u!114 &7858196088163182736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8084569729449921211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 911e82d3417886947830e6e425e08f79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
+  attackEffectPrefab: {fileID: 8194992990867289339, guid: 99bc28c0d45f51c4fbac01080b73edc7, type: 3}
+  attackRange: 5
+  attackInterval: 2
+  treeLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!65 &3386187844176169650
 BoxCollider:
   m_ObjectHideFlags: 0

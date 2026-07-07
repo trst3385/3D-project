@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -1014788774904847301}
   - component: {fileID: 406463426515508831}
   - component: {fileID: 9097446485556393064}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SlowTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f395b9d165dba5b4abec5d336a0998cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreeHealth
-  treeData: {fileID: 0}
 --- !u!114 &406463426515508831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,7 +84,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c73ef7251efec624698d684b76a74073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlowTower
-  treeData: {fileID: 0}
+  treeData: {fileID: 11400000, guid: 854ab08952cbf43448643083736caa58, type: 2}
 --- !u!135 &9097446485556393064
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -118,7 +117,7 @@ GameObject:
   - component: {fileID: 1904634637156472647}
   - component: {fileID: 8200748727868283860}
   - component: {fileID: 3326940410799749056}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tree_02_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +208,7 @@ GameObject:
   - component: {fileID: 8813926893885083925}
   - component: {fileID: 4951542041212225477}
   - component: {fileID: 8692433483621043402}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tree_02_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}

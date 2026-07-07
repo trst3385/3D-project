@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
+    [Header("이 오브젝트가 보스 몬스터면 체크")]
+    [Tooltip("지금 이 오브젝트가 보스면 체크(이 오브젝트가 보스인걸 확인")]
     public bool isBoss = false;//인스펙터에서 보스 프리팹만 체크해줘(보스는 카운트에 포함 되지 않게)
     public event System.Action<bool> OnEnemyDie;//(GameManager 등) 몬스터 사망 이벤트 구독
 

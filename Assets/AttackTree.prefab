@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1076463842903572795}
   - component: {fileID: 2926449167352635869}
   - component: {fileID: 5568629246214567489}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tree_01_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 8395540203278039132}
   - component: {fileID: 6881924530841533212}
   - component: {fileID: 8403852045868682041}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AttackTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f395b9d165dba5b4abec5d336a0998cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreeHealth
-  treeData: {fileID: 0}
 --- !u!114 &8395540203278039132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,7 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aa19540f378c084da8923604d694ab7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackTower
-  treeData: {fileID: 0}
+  treeData: {fileID: 11400000, guid: 854ab08952cbf43448643083736caa58, type: 2}
   firePoint: {fileID: 39364650489904606}
   lineRenderer: {fileID: 8403852045868682041}
   enemiesInRange: []
@@ -324,7 +323,7 @@ GameObject:
   - component: {fileID: 5944385988162443300}
   - component: {fileID: 2862739662725175156}
   - component: {fileID: 7954191561263310980}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tree_01_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -433,7 +432,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 39364650489904606}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: firePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

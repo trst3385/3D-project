@@ -57,4 +57,19 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
             enemiesInRange.Remove(other.transform);
         }
     }
+
+    private void OnDestroy()//나무가 파괴(Destroy)될 때 슬로우 상태인 몬스터의 속도를 복구
+    {                       //OnDestroy: MonoBehaviour를 상속받는 객체가 파괴되기 직전에 마지막으로 호출되는 생명주기 이벤트 함수
+        foreach (Transform enemyTransform in enemiesInRange)//몬스터가 씬에 아직 존재한다면 속도 복구 명령
+        {
+            if (enemyTransform != null)
+            {
+                Enemy e = enemyTransform.GetComponent<Enemy>();
+                if (e != null)
+                {
+                    e.ResetSpeed();//Enemy 스크립트의 ResetSpeed()
+                }
+            }
+        }
+    }
 }

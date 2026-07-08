@@ -64,7 +64,6 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
         if (other.CompareTag("Enemy"))
         {
             enemiesInRange.Add(other.transform);
-            Debug.Log(gameObject.name + "에 적 추가됨! 현재 적 수: " + enemiesInRange.Count);
         }
     }
     void OnTriggerExit(Collider other)//트리거 밖으로 적이 나가면 리스트에서 제거

@@ -5,6 +5,7 @@ public class TreeHealth : MonoBehaviour
 {
     private TreeData _treeData;//타워데이터 참조, SO자동연결 상태(이 스크립트가 들어있는 오브젝트의 나무 스크립트의 SO를 받아옴)
     private int _currentHitCount = 0;//현재 맞은 횟수
+    private TreeSlot _mySlot;//나무가 심어진 슬롯 정보
 
     void Awake()
     {
@@ -33,9 +34,19 @@ public class TreeHealth : MonoBehaviour
         }
     }
 
+    public void SetSlot(TreeSlot slot)//TreeSlot이 나무를 심을 때 이 함수를 호출해줌
+    {
+        _mySlot = slot;
+    }
+
     private void DestroyTower()
     {
-        Debug.Log("타워 파괴됨!");
+        if (_mySlot != null)//파괴되기 직전에 슬롯에게 "나 이제 사라져, 자리 비워줘!"라고 알려줌
+        {
+            _mySlot.ClearSlot();//TreeSlot 스크립트의 ClearSlot()에게 슬롯에 자리가 비었다 알림
+        }
+
+        Debug.Log("타워가 파괴됐어!");
         //나중에 여기다가 이펙트 재생(Particle)이나 사운드 재생 코드를 추가하기 매우 편함
         Destroy(gameObject);
     }

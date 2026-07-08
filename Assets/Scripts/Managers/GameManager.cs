@@ -23,16 +23,24 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        //1. 이미 인스턴스가 있는데 나(this) 자신이 아니라면? (중복 삭제)
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
-        if (roundDatas != null && roundDatas.Count > 0)//방어적 설계: 리스트에 SO를 아무것도 안 넣었을 때 에러나는 걸 방지
+        //2. 이게 첫 번째 인스턴스라면 씬이 바뀌어도 파괴되지 않게!
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        //기존 초기화 로직...
+        if (roundDatas != null && roundDatas.Count > 0)
         {
-            currentRoundData = roundDatas[currentRoundIndex];//게임 시작 시 0번째(1라운드) 데이터를 현재 라운드 데이터로 설정
+            currentRoundData = roundDatas[currentRoundIndex];
         }
-        else
-        {
-            Debug.LogError("GameManager: roundDatas 리스트가 비어있어! SO를 인스펙터에서 넣어줘!");
-        }
+
+        Instance = this;  
     } 
 
   

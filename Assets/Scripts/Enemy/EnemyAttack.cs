@@ -2,12 +2,9 @@
 
 public class EnemyAttack : MonoBehaviour
 {
-    [Header("효과 설정")]
-    public GameObject attackEffectPrefab;//공격 이펙트
-
     public LayerMask treeLayer;//인스펙터에서 Tree 레이어만 체크하도록 설정
 
-    private Enemy enemy;// Enemy 스크립트 참조
+    private Enemy enemy;//Enemy 스크립트 참조(SO를 담은 허브 스크립트)
     private float timer;//(공격 주기 관리 attackInterval) 공격과 공격 사이의 흐른 시간을 누적
 
 
@@ -60,11 +57,12 @@ public class EnemyAttack : MonoBehaviour
 
         if (treeHealth != null)
         {
-            treeHealth.TakeDamage();//1. 나무 체력 감소
+            treeHealth.TakeDamage();//1. 나무 체력(피격 카운트) 감소
 
-            if (attackEffectPrefab != null)//2. 이펙트 생성 (이펙트 프리팹이 연결되어 있다면)
+            GameObject effect = enemy.enemyData.attackEffectPrefab;
+            if (effect != null)//2. 이펙트 생성 (이펙트 프리팹이 연결되어 있다면!)
             {
-                Instantiate(attackEffectPrefab, targetCollider.transform.position, Quaternion.identity);
+                Instantiate(effect, targetCollider.transform.position, Quaternion.identity);//SO에 있는 피격 이펙트 생성
             }
         }
     }

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트는 부모 오브젝트가 파괴될 때 씬에서 강제로 튕겨 나와(Root로 이동)
 {
     public static GameManager Instance;//싱글톤
     public RoundData currentRoundData;//이 스크립트에서만 SO연결, 다른 매니저 스크립트에서 GameManager에 연결된 SO 값을 받아옴

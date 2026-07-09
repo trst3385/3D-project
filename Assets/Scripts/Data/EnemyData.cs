@@ -12,6 +12,8 @@ public class EnemyData : ScriptableObject
     public float AttackRange = 5f;
     public float AttackInterval = 2f;
     public int TreeDamage = 1;//나무에게 줄 데미지 (혹은 맞은 횟수 처리)
+    [Header("공격 시각 효과")]
+    public GameObject attackEffectPrefab;//나무 공격시 피격 이펙트
 
 
 }

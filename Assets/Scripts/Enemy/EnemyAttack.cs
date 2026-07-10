@@ -68,7 +68,7 @@ public class EnemyAttack : MonoBehaviour
     }
 
 
-    private void OnDrawGizmos()//몬스터 주변에 나무 공격 사거리 시각화 
+    private void OnDrawGizmos()//씬뷰에서 몬스터 주변에 나무 공격 사거리 시각화 
     {                          //OnDrawGizmosSelected(): 오브젝트를 클릭했을 때만 보임
                                //OnDrawGizmos(): 항상 보임
         if (enemy == null || enemy.enemyData == null)//공격 범위가 없으면 안 보이니까 방어적 설계

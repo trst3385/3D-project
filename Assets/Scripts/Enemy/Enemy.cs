@@ -13,8 +13,12 @@ public class Enemy : MonoBehaviour
     private EnemyMovement movement;//이동 로직 컴포넌트
     private float currentSpeed;//현재 속도
 
+    [Tooltip("해당 몬스터 클릭 가능 여부")]
+    public bool isSelected = false;//해당 몬스터 클릭(선택) 여부
+
     private EnemyAttack attack;
- 
+    public LineRenderer rangeLineRenderer;
+
 
 
     void Awake()
@@ -23,6 +27,15 @@ public class Enemy : MonoBehaviour
         movement = GetComponent<EnemyMovement>();
 
         currentSpeed = enemyData.Speed;
+    }
+
+    void Start()
+    {
+        if (rangeLineRenderer != null)//시작할 땐 사거리 표시가 안 보이게
+        {
+            rangeLineRenderer.enabled = false;
+        }
+        DrawCircle();//원 모양을 미리 그려둠
     }
 
     void Update()
@@ -45,6 +58,39 @@ public class Enemy : MonoBehaviour
             player.TakeDamage(enemyData.Damage);
         }
         Destroy(gameObject);
+    }
+
+    void OnMouseDown()//몬스터 클릭 시 공격 사거리 표시(EnemyAttack에 전달)
+    {   
+        //isSelected = true;로 되어 있으면 한번 클릭하면 계속 선택된 상태로 남아!
+        isSelected = !isSelected;//클릭할 때마다 토글
+
+        if (rangeLineRenderer != null)//사거리 표시를 선택 여부에 따라 켜기/끄기
+        {
+            rangeLineRenderer.enabled = isSelected;
+        }
+        Debug.Log(gameObject.name + " 선택됨!");
+
+        //여기에 나중의 UI 호출 로직 등을 추가할 수 있어
+    }
+    void DrawCircle()//몬스터 클릭 사 공격 사거리 노출, 현재는 Start에서 한번 초기화되서 사거리 증가는 아직 불가.
+    {
+        if (rangeLineRenderer == null)
+        {
+            return;
+        }
+
+        int segments = 50;//원을 구성할 점의 개수
+        rangeLineRenderer.positionCount = segments + 1;
+        float radius = enemyData.AttackRange;//몬스터 SO의 공격 사거리 값을 받아옴
+
+        for (int i = 0; i <= segments; i++)
+        {
+            float angle = i * 2 * Mathf.PI / segments;
+            float x = Mathf.Sin(angle) * radius;
+            float z = Mathf.Cos(angle) * radius;
+            rangeLineRenderer.SetPosition(i, new Vector3(x, 0, z));
+        }
     }
 }
     

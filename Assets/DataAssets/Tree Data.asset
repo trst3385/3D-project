@@ -16,7 +16,7 @@ MonoBehaviour:
   AttackInterval: 1
   Range: 10
   BulletPrefab: {fileID: 9120391982807527292, guid: aea2d8add99f5334fa99f8476c05d594, type: 3}
-  BulletSpeed: 10
+  BulletSpeed: 15
   BulletDamage: 5
   SlowAmount: 0.5
   SlowRange: 5

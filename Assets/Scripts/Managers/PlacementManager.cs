@@ -7,10 +7,22 @@ public class PlacementManager : MonoBehaviour
     public int currentSelectedTreeIndex = 0;//지금 선택된 나무 인덱스
 
     private bool isTreeSelected = false;//나무를 선택했는지 확인하는 상태 변수
+    private GameObject currentPreview;//나무 아이콘 클릭 시 나무 이미지가 마우스를 따라 움직임
 
 
     void Update()
     {
+        if (isTreeSelected && currentPreview != null)//나무 선택 시 나무 오브젝트가 마우스에 붙기
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//1. 마우스 위치에서 카메라 뷰 방향으로 레이 생성
+            Plane groundPlane = new Plane(Vector3.up, Vector3.zero);//2. 바닥 높이(Y=0)의 가상 평면 정의
+
+            if (groundPlane.Raycast(ray, out float rayDistance))//3. 레이와 평면이 만나는 지점을 계산하여 위치 업데이트
+            {
+                currentPreview.transform.position = ray.GetPoint(rayDistance);//배치 대상이 마우스 커서를 따라다니도록 실시간 좌표 동기화
+            }
+        }
+
         if (Input.GetMouseButtonDown(0))//마우스 왼쪽 버튼 클릭 시
         {
             //IsPointerOverGameObject란? : 마우스가 UI 요소(버튼, 패널 등) 위에 있는지 확인,
@@ -51,6 +63,12 @@ public class PlacementManager : MonoBehaviour
                     Debug.Log("나무 배치 완료! 다음 treeSlot에 배치를 할때 다시 나무를 선택해줘!");
                 }
             }
+
+            if (currentPreview != null)//배치 완료 시 미리보기 이미지 삭제
+            {
+                Destroy(currentPreview);
+                currentPreview = null;
+            }
         }
     }
 
@@ -59,6 +77,18 @@ public class PlacementManager : MonoBehaviour
         //버튼에서 들어온 인덱스로 현재 선택된 나무를 바꿈
         currentSelectedTreeIndex = index;
         isTreeSelected = true;//버튼을 누르면 선택된 상태로 변경
+
+        if (currentPreview != null)//나무 선택 시 미리보기 생성
+        {
+            Destroy(currentPreview);
+        }
+        currentPreview = Instantiate(treePrefabs[currentSelectedTreeIndex]);
+        Collider col = currentPreview.GetComponent<Collider>();//미리보기 이미지는 충돌 처리가 필요 없으니 콜라이더를 끄자
+        if (col != null)
+        {
+            col.enabled = false;    
+        }
+
         Debug.Log($"{treePrefabs[currentSelectedTreeIndex].name}을(를) 선택했어!");
     }
 }

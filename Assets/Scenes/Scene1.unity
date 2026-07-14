@@ -3951,7 +3951,7 @@ GameObject:
   - component: {fileID: 2085882850}
   - component: {fileID: 2085882849}
   - component: {fileID: 2085882848}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4064,7 +4064,7 @@ GameObject:
   - component: {fileID: 2099273406}
   - component: {fileID: 2099273405}
   - component: {fileID: 2099273404}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}

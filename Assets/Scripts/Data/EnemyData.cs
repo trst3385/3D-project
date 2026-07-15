@@ -4,7 +4,7 @@
 
 public class EnemyData : ScriptableObject
 {
-    public int MaxHealth = 10;
+    public int MaxHealth = 20;
     public float Speed = 5f;
     public int Damage = 10;//몬스터가 WayPoint 끝에 닿으면 플레이어 HP 감소
 

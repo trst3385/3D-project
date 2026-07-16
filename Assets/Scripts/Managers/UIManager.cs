@@ -8,6 +8,8 @@ public class UIManager : MonoBehaviour//InGameUI(WaveText 등)와 GameClearPanel
     [Header("WaveText연결. 자동연결")]
     public TextMeshProUGUI WaveText;
 
+    [Header("GoldText 연결. 자동연결")]
+    public TextMeshProUGUI GoldText;
 
     void Start()
     {
@@ -18,8 +20,15 @@ public class UIManager : MonoBehaviour//InGameUI(WaveText 등)와 GameClearPanel
 
         //라운드가 바뀌면 WaveText UI도 새 데이터에 맞게 초기화
         GameManager.Instance.OnRoundChanged += (newData) => {UpdateUI(0, newData.enemyCount);};
-    }                                                     
+    }
 
+    void Update()
+    {
+        if (GoldText != null && PlacementManager.Instance != null)//골드 텍스트는 매 프레임 업데이트 (싱글톤 접근)
+        {
+            GoldText.text = $"Gold: {PlacementManager.Instance.currentGold}";
+        }
+    }
 
     void OnDestroy()
     {
@@ -45,14 +54,14 @@ public class UIManager : MonoBehaviour//InGameUI(WaveText 등)와 GameClearPanel
 
     void FindUI()//UI 자동으로 찾기
     {
-        GameObject uiObj = GameObject.Find("WaveText");//몬스터 처치 수, 자동 연결
-        if (uiObj != null)
-        {
-            WaveText = uiObj.GetComponent<TextMeshProUGUI>();
-        }
-        else
-        {
-            Debug.LogWarning("WaveText를 찾을 수 없어! 씬에 오브젝트가 있는지 확인해!");
-        }     
+        //WaveText 자동 찾기
+        GameObject waveObj = GameObject.Find("WaveText");
+        if (waveObj != null) WaveText = waveObj.GetComponent<TextMeshProUGUI>();
+        else Debug.LogWarning("WaveText를 찾을 수 없어!");
+
+        //GoldText 자동 찾기
+        GameObject goldObj = GameObject.Find("GoldText");
+        if (goldObj != null) GoldText = goldObj.GetComponent<TextMeshProUGUI>();
+        else Debug.LogWarning("GoldText를 찾을 수 없어! 씬에 오브젝트가 있는지 확인해!");
     }
 }

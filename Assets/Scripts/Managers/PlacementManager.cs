@@ -3,11 +3,29 @@ using UnityEngine;
 
 public class PlacementManager : MonoBehaviour
 {
+    public static PlacementManager Instance;//싱글톤
+
+
+    //...골드로 나무 구매 시스템(당장은 하드코딩+이 스크립트에 적용...
+    public int currentGold = 50;//시작 골드
+    public int treeCost = 25;   //나무당 비용
+    //.....
+
     public GameObject[] treePrefabs;//여러 나무를 인스펙터에서 리스트로 관리
     public int currentSelectedTreeIndex = 0;//지금 선택된 나무 인덱스
 
     private bool isTreeSelected = false;//나무를 선택했는지 확인하는 상태 변수
     private GameObject currentPreview;//나무 아이콘 클릭 시 나무 이미지가 마우스를 따라 움직임
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)//인스턴스가 이미 존재하면 파괴하고, 처음이면 자신을 인스턴스로 설정
+        {
+            Destroy(gameObject);//싱글톤 중복 생성 방지 및 인스턴스 초기화
+            return;
+        }
+        Instance = this;
+    }
 
 
     void Update()
@@ -21,6 +39,17 @@ public class PlacementManager : MonoBehaviour
             {
                 currentPreview.transform.position = ray.GetPoint(rayDistance);//배치 대상이 마우스 커서를 따라다니도록 실시간 좌표 동기화
             }
+        }
+
+        if (Input.GetMouseButtonDown(1))//마우스 오른쪽 버튼. 나무 선택 취소
+        {
+            isTreeSelected = false;
+            if (currentPreview != null)
+            {
+                Destroy(currentPreview);
+            }
+            currentPreview = null;
+            Debug.Log("나무 선택 취소!");
         }
 
         if (Input.GetMouseButtonDown(0))//마우스 왼쪽 버튼 클릭 시
@@ -41,11 +70,16 @@ public class PlacementManager : MonoBehaviour
                 return;
             }
 
+            if (currentGold < treeCost)//골드 체크 로직
+            {
+                Debug.Log("골드가 부족해! 나무를 심을 수 없어!");
+                return;
+            }
+
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//카메라에서 마우스 위치로 레이 발사
             RaycastHit hit;
-
             int layerMask = LayerMask.GetMask("TreeSlot");//"TreeSlot" 레이어만 감지하도록 설정 (LayerMask 필수!)
-
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
             {
                 TreeSlot slot = hit.collider.GetComponent<TreeSlot>();
@@ -59,8 +93,9 @@ public class PlacementManager : MonoBehaviour
 
                     slot.PlantTree(treePrefabs[currentSelectedTreeIndex]);//현재 선택된 나무를 배치
 
+                    currentGold -= treeCost;//보유 골드 차감
                     isTreeSelected = false;//배치 완료 후 선택 해제
-                    Debug.Log("나무 배치 완료! 다음 treeSlot에 배치를 할때 다시 나무를 선택해줘!");
+                    Debug.Log($"배치 완료! 남은 골드: {currentGold}");
                 }
             }
 

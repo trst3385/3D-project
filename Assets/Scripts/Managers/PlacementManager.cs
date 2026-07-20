@@ -30,79 +30,88 @@ public class PlacementManager : MonoBehaviour
 
     void Update()
     {
-        if (isTreeSelected && currentPreview != null)//나무 선택 시 나무 오브젝트가 마우스에 붙기
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//1. 마우스 위치에서 카메라 뷰 방향으로 레이 생성
-            Plane groundPlane = new Plane(Vector3.up, Vector3.zero);//2. 바닥 높이(Y=0)의 가상 평면 정의
+        UpdatePreviewPosition();//나무 선택 시 마우스 커서에 나무가 따라다니게 함
 
-            if (groundPlane.Raycast(ray, out float rayDistance))//3. 레이와 평면이 만나는 지점을 계산하여 위치 업데이트
-            {
-                currentPreview.transform.position = ray.GetPoint(rayDistance);//배치 대상이 마우스 커서를 따라다니도록 실시간 좌표 동기화
-            }
+        //입력 처리 (입력만 감지해서 함수로 넘기기)
+        if (Input.GetMouseButtonDown(1)) CancelPlacement();//마우스 오른쪽 버튼: 나무 선택 취소
+        if (Input.GetMouseButtonDown(0)) TryPlantTree();//마우스 왼쪽 버튼: 나무 배치 시도      
+    }
+
+    private void UpdatePreviewPosition()//나무 선택 시 미리보기 이미지가 마우스를 따라다님
+    {
+        if (!isTreeSelected || currentPreview == null)//나무가 선택되지 않았거나 미리보기 오브젝트가 없으면 종료
+        {
+            return;
         }
 
-        if (Input.GetMouseButtonDown(1))//마우스 오른쪽 버튼. 나무 선택 취소
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//1. 마우스 위치에서 카메라 뷰 방향으로 레이 생성
+        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);//2. 바닥 높이(Y=0)의 가상 평면 정의
+        if (groundPlane.Raycast(ray, out float rayDistance))//3. 레이와 평면이 만나는 지점을 계산하여 위치 업데이트
         {
-            isTreeSelected = false;
-            if (currentPreview != null)
-            {
-                Destroy(currentPreview);
-            }
-            currentPreview = null;
-            Debug.Log("나무 선택 취소!");
+            currentPreview.transform.position = ray.GetPoint(rayDistance);
+        }
+    }
+
+    private void CancelPlacement()//우클릭으로 나무 선택 취소
+    {
+        if (!isTreeSelected)//상태 초기화: 선택 해제 및 미리보기 오브젝트 삭제
+        {
+            return;
         }
 
-        if (Input.GetMouseButtonDown(0))//마우스 왼쪽 버튼 클릭 시
+        isTreeSelected = false;//나무 선택 상태 해제
+
+        if (currentPreview != null)//미리보기 이미지 삭제(파괴)
         {
-            //IsPointerOverGameObject란? : 마우스가 UI 요소(버튼, 패널 등) 위에 있는지 확인,
-            //UI 클릭 시 게임 월드에서 레이캐스트가 작동하지 않게 막는 방어 코드
-            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }//작동 원리: EventSystem이 현재 마우스 위치에 그려진 UI 요소가 있는지 레이캐스트를 쏴서 확인.
-             //만약 UI가 있으면 true, 없으면 false를 반환.
-             //왜 써야 해?: 이게 없으면 특정 나무를 선택하려고 UI 버튼을 눌렀을 뿐인데,
-             //맵 뒤에 있는 다른 오브젝트나 UI, TreeSlot 등. 같이 클릭될 수 있는 '클릭 관통(Click-through)' 현상이 발생해.
+            Destroy(currentPreview);
+        }
+        currentPreview = null;//참조 초기화
+        Debug.Log("나무 선택 취소!");
+    }
 
-            if (!isTreeSelected)//나무가 선택되지 않았다면 아래 로직을 실행하지 않고 중단
-            {
-                Debug.Log("나무를 먼저 선택해!");
-                return;
-            }
+    private void TryPlantTree()
+    {
+        //UI 클릭 방어: UI를 클릭했을 때는 게임 월드 레이캐스트가 작동하지 않게 함 (클릭 관통 현상 방지)
+        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+     
+        if (!isTreeSelected)//나무가 선택되지 않았으면 로직 중단
+        {
+            Debug.Log("나무를 먼저 선택해!");
+            return;
+        }
+        if (currentGold < treeCost)//현재 보유한 골드가 나무 비용보다 적으면 중단
+        {
+            Debug.Log("골드가 부족해! 나무를 심을 수 없어!");
+            return;
+        }
 
-            if (currentGold < treeCost)//골드 체크 로직
-            {
-                Debug.Log("골드가 부족해! 나무를 심을 수 없어!");
-                return;
-            }
+        //배치 대상 레이어(TreeSlot)만 감지하여 레이 발사
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        int layerMask = LayerMask.GetMask("TreeSlot");
 
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);//카메라에서 마우스 위치로 레이 발사
-            RaycastHit hit;
-            int layerMask = LayerMask.GetMask("TreeSlot");//"TreeSlot" 레이어만 감지하도록 설정 (LayerMask 필수!)
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
+        {
+            TreeSlot slot = hit.collider.GetComponent<TreeSlot>();
+            if (slot != null)
             {
-                TreeSlot slot = hit.collider.GetComponent<TreeSlot>();
-                if (slot != null)
+                if (treePrefabs[currentSelectedTreeIndex] == null)//나무 프리팹이 연결되지 않았을 경우 오류 처리
                 {
-                    if (treePrefabs[currentSelectedTreeIndex] == null)//인덱스가 비었을때. 빨간색 오류로 띄우기 (문제가 있거나 심각할 때)
-                    {
-                        Debug.LogError("[시스템 오류] 배치할 나무 프리팹이 연결되지 않았어! 인스펙터를 확인해!");
-                        return;//오류 시 함수 종료
-                    }
-
-                    slot.PlantTree(treePrefabs[currentSelectedTreeIndex]);//현재 선택된 나무를 배치
-
-                    currentGold -= treeCost;//보유 골드 차감
-                    isTreeSelected = false;//배치 완료 후 선택 해제
-                    Debug.Log($"배치 완료! 남은 골드: {currentGold}");
+                    Debug.LogError("[시스템 오류] 배치할 나무 프리팹이 연결되지 않았어! 인스펙터를 확인해!");
+                    return;
                 }
-            }
 
-            if (currentPreview != null)//배치 완료 시 미리보기 이미지 삭제
-            {
+                //나무 배치 및 골드 차감
+                slot.PlantTree(treePrefabs[currentSelectedTreeIndex]);
+                currentGold -= treeCost;
+
+                //배치 완료 후 초기화
+                isTreeSelected = false;
                 Destroy(currentPreview);
                 currentPreview = null;
+                Debug.Log($"배치 완료! 남은 골드: {currentGold}");
             }
         }
     }
@@ -117,7 +126,7 @@ public class PlacementManager : MonoBehaviour
         {
             Destroy(currentPreview);
         }
-        currentPreview = Instantiate(treePrefabs[currentSelectedTreeIndex]);
+        currentPreview = Instantiate(treePrefabs[currentSelectedTreeIndex]);//변수에 미리보기 이미지 오브젝트가 생성
         Collider col = currentPreview.GetComponent<Collider>();//미리보기 이미지는 충돌 처리가 필요 없으니 콜라이더를 끄자
         if (col != null)
         {

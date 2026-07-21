@@ -116,8 +116,13 @@ public class PlacementManager : MonoBehaviour
         }
     }
 
-    public void SelectTree(int index)//버튼에 연결할 함수
+    public void SelectTree(int index)//나무 UI버튼에 연결할 함수(OnClick)
     {
+        if (currentGold < treeCost)//만약 골드가 부족하면 미리보기 생성 및 선택 진입을 차단!
+        {
+            return;//나중에 여기에 화면 UI 텍스트(예: "골드가 부족합니다!")를 띄우는 코드를 붙이면 돼
+        }
+
         //버튼에서 들어온 인덱스로 현재 선택된 나무를 바꿈
         currentSelectedTreeIndex = index;
         isTreeSelected = true;//버튼을 누르면 선택된 상태로 변경

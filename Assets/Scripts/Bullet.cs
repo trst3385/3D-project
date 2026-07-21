@@ -19,8 +19,8 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
-        if (isHit)//이미 무언가에 맞아서 처리 중이라면 이동하지 않음
-        {
+        if (isHit)//이미 무언가에 맞아서 처리 중이라면 이동하지 않음           
+        {         //[if문 원리] 괄호 안이 true일 때만 실행됨. 평소엔 false라 통과하지만, HitTarget에서 true로 바뀌면 return(종료)됨
             return;
         }
         if (target == null)//목표가 사라지면 발사체도 삭제

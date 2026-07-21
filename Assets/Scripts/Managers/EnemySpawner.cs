@@ -26,10 +26,12 @@ public class EnemySpawner : MonoBehaviour
 
         if (currentData.bossPrefab == null)
         {
+            Debug.LogError($"[EnemySpawner] 현재 라운드({currentData.name})에 설정된 보스 프리팹(bossPrefab)이 없습니다! 인스펙터를 확인해!");
             return;
         }
         if (isBossSpawned)
         {
+            Debug.LogWarning("[EnemySpawner] 이미 보스가 소환됐어! 중복 소환을 차단할게!");
             return;
         }
 

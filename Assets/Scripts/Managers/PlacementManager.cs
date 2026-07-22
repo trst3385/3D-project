@@ -1,12 +1,14 @@
 ﻿using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using System;
 using UnityEngine;
 
 public class PlacementManager : MonoBehaviour
 {
     public static PlacementManager Instance;//싱글톤
 
+    public event Action OnGoldShortage;//[옵저버 패턴] 골드 부족 시 외부(UIManager 등)에 알릴 이벤트
 
-    //...골드로 나무 구매 시스템(당장은 하드코딩+이 스크립트에 적용...
+    //...골드로 나무 구매 시스템(당장은 하드코딩 + 이 스크립트에 적용...)
     public int currentGold = 50;//시작 골드
     public int treeCost = 25;   //나무당 비용
     //.....
@@ -120,6 +122,11 @@ public class PlacementManager : MonoBehaviour
     {
         if (currentGold < treeCost)//만약 골드가 부족하면 미리보기 생성 및 선택 진입을 차단!
         {
+            //여기에 UI 텍스트로 골드가 없다는걸 게임 내 화면에 띄우게 해보자 7/21 (아니면 만약 여러 오류 뜨는걸 하나의 함수에 몰아넣던지)
+            Debug.Log("골드가 부족합니다! 나무를 선택할 수 없습니다.");
+
+            OnGoldShortage?.Invoke();//[핵심!] UIManager를 직접 찾거나 알 필요 없이, 이벤트 신호만 던짐(UIManager가 이 신호를 받아 텍스트 출력)
+
             return;//나중에 여기에 화면 UI 텍스트(예: "골드가 부족합니다!")를 띄우는 코드를 붙이면 돼
         }
 

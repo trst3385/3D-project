@@ -5,9 +5,16 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트는 부모 오브젝트가 파괴될 때 씬에서 강제로 튕겨 나와(Root로 이동)
 {
     public static GameManager Instance;//싱글톤
-    public RoundData currentRoundData;//이 스크립트에서만 SO연결, 다른 매니저 스크립트에서 GameManager에 연결된 SO 값을 받아옴
+
+    [Header("라운드 설정")]
     public List<RoundData> roundDatas;//여러 라운드 데이터를 미리 SO로 만들어두고 리스트에 담기
-    public int currentRoundIndex = 0;
+
+    [SerializeField] private int startRoundIndex = 0;//숫자를 바꿔 실행 시 웨이브 순서 설정(0부터 1웨이브 시작)
+
+    //외부에서 현재 라운드 번호를 '읽을 수는 있지만', 함부로 값을 바꿀 수 없도록(private set) 보호하고 인스펙터 창에서 숨김
+    public int CurrentRoundIndex { get; private set; }
+    //외부에서 현재 라운드 데이터(SO)를 '읽을 수는 있지만', 함부로 교체할 수 없도록 보호하고 인스펙터 창에서 숨김
+    public RoundData currentRoundData { get; private set; }//이 스크립트에서만 SO연결, 다른 매니저 스크립트에서 GameManager에 연결된 SO 값을 받아옴
 
 
     private int defeatedEnemyCount = 0;//처치한 몬스터 수
@@ -34,10 +41,12 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        CurrentRoundIndex = startRoundIndex;//게임 시작 시, 지정한 시작 라운드 인덱스로 초기화
+
         //기존 초기화 로직...
         if (roundDatas != null && roundDatas.Count > 0)
         {
-            currentRoundData = roundDatas[currentRoundIndex];
+            currentRoundData = roundDatas[CurrentRoundIndex];
         }
 
         Instance = this;  
@@ -77,10 +86,10 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
 
     public void LoadNextRound()
     {
-        currentRoundIndex++;
-        if (currentRoundIndex < roundDatas.Count)
+        CurrentRoundIndex++;
+        if (CurrentRoundIndex < roundDatas.Count)
         {
-            currentRoundData = roundDatas[currentRoundIndex];
+            currentRoundData = roundDatas[CurrentRoundIndex];
             defeatedEnemyCount = 0;//카운트 초기화
 
             OnRoundChanged?.Invoke(currentRoundData);//라운드 시작 알림 (UI나 스포너가 구독하도록)

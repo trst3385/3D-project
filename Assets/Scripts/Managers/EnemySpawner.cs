@@ -12,7 +12,6 @@ public class EnemySpawner : MonoBehaviour
     void Start()
     {
         RoundData data = GameManager.Instance.currentRoundData;//GameManager에 연결된 SO값 받아옴
-        Debug.Log("이번 라운드 몬스터: " + data.enemyPrefab.name);
         Debug.Log("스폰 간격: " + data.spawnInterval);
 
         GameManager.Instance.OnBossSpawn += SpawnBoss;//보스 소환 이벤트 구독

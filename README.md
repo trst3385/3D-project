@@ -3,6 +3,10 @@
  # 3D_Project(제목 미정)
 
   현재 핵심 게임 루프(몬스터 웨이브 스폰 및 타워 배치/생존)의 프로토타이핑을 완료한 3D 전략 디펜스(또는 생존) 프로젝트입니다.  
+
+  <p align="center">
+  <img src="Images/PlayImage.png" alt="3D 프로젝트 플레이 화면" width="700">
+</p>
   
 </div>
 

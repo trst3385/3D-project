@@ -66,6 +66,8 @@
 
 ---
 
+##  주요 문제 해결 과정 & 배운 점
+
 
 <details>
 <summary><b>비활성화된 UI 오브젝트 탐색 실패 문제 해결 및 자동 참조 로직 설계(PauseManager.cs)</b></summary>

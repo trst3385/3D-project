@@ -1323,8 +1323,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c230b55c8eead449fda25e8988e48e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementManager
-  currentGold: 50
-  treeCost: 25
   treePrefabs:
   - {fileID: 3207333913058670643, guid: 3dce143fbb6b90b41a56c6e1b07d5db2, type: 3}
   - {fileID: 1493915652956472119, guid: f28bfd307b77d4f47ba0d1cd107e63a6, type: 3}
@@ -4083,6 +4081,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5634a33b55aa6644baf8d5085d83b684, type: 2}
   - {fileID: 11400000, guid: 042655883f164814c904aaec909e9392, type: 2}
   startRoundIndex: 0
+  gamegold: {fileID: 11400000, guid: f765d5421a08e7849b6dec738c08fda4, type: 2}
 --- !u!1 &1811213966
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,9 +42,9 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        if (GoldText != null && PlacementManager.Instance != null)//골드 텍스트는 매 프레임 업데이트 (싱글톤 접근)
+        if (GoldText != null && GameManager.Instance != null)//골드 텍스트는 매 프레임 업데이트 (싱글톤 접근)
         {
-            GoldText.text = $"Gold: {PlacementManager.Instance.currentGold}";
+            GoldText.text = $"Gold: {GameManager.Instance.CurrentGold}";
         }
     }
 

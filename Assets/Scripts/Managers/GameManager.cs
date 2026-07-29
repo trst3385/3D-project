@@ -6,16 +6,22 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
 {
     public static GameManager Instance;//싱글톤
 
-    [Header("라운드 설정")]
-    public List<RoundData> roundDatas;//여러 라운드 데이터를 미리 SO로 만들어두고 리스트에 담기
-
-    [SerializeField] private int startRoundIndex = 0;//숫자를 바꿔 실행 시 웨이브 순서 설정(0부터 1웨이브 시작)
-
     //외부에서 현재 라운드 번호를 '읽을 수는 있지만', 함부로 값을 바꿀 수 없도록(private set) 보호하고 인스펙터 창에서 숨김
     public int CurrentRoundIndex { get; private set; }
     //외부에서 현재 라운드 데이터(SO)를 '읽을 수는 있지만', 함부로 교체할 수 없도록 보호하고 인스펙터 창에서 숨김
     public RoundData currentRoundData { get; private set; }//이 스크립트에서만 SO연결, 다른 매니저 스크립트에서 GameManager에 연결된 SO 값을 받아옴
 
+    [Header("라운드 설정")]
+    public List<RoundData> roundDatas;//여러 라운드 데이터를 미리 SO로 만들어두고 리스트에 담기
+
+    [SerializeField] private int startRoundIndex = 0;//숫자를 바꿔 실행 시 웨이브 순서 설정(0부터 1웨이브 시작)
+
+    //----게임 골드----
+    [Header("게임 설정 데이터")]
+    public GameGold gamegold;//인스펙터에서 GameGold에셋(SO)을 꽂아줄 변수
+    [Header("골드 시스템")]
+    public int CurrentGold { get; private set; } // 외부에서 읽을 수만 있게 보호
+    //-----------------
 
     private int defeatedEnemyCount = 0;//처치한 몬스터 수
 
@@ -49,7 +55,15 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
             currentRoundData = roundDatas[CurrentRoundIndex];
         }
 
-        Instance = this;  
+        if (gamegold != null)//게임 시작 시 SO로부터 초기 골드 설정
+        {
+            CurrentGold = gamegold.startGold;
+        }
+        else
+        {
+            CurrentGold = 50;//혹시 몰라 예외 처리
+            Debug.LogWarning("GameGold SO가 GameManager에 연결되지 않았어!");
+        }
     } 
 
   
@@ -99,5 +113,19 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
             Debug.Log("모든 라운드 클리어! 진짜 게임 끝!");
             //여기서 메인 메뉴로 가거나 축하 화면 표시
         }
+    }
+
+    public bool UseGold(int amount)//골드를 사용(차감)하는 함수
+    {
+        if (CurrentGold >= amount)
+        {
+            CurrentGold -= amount;
+            Debug.Log($"골드 차감 성공! 남은 골드: {CurrentGold}");
+            //나중에 골드 UI가 바뀌면 여기서 이벤트를 쏴줄 수도 있어!
+            return true;
+        }
+
+        Debug.Log("골드가 부족해서 사용할 수 없어!");
+        return false;
     }
 }

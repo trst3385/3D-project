@@ -8,10 +8,6 @@ public class PlacementManager : MonoBehaviour
 
     public event Action OnGoldShortage;//[옵저버 패턴] 골드 부족 시 외부(UIManager 등)에 알릴 이벤트
 
-    //...골드로 나무 구매 시스템(당장은 하드코딩 + 이 스크립트에 적용...)
-    public int currentGold = 50;//시작 골드
-    public int treeCost = 25;   //나무당 비용
-    //.....
 
     public GameObject[] treePrefabs;//여러 나무를 인스펙터에서 리스트로 관리
     public int currentSelectedTreeIndex = 0;//지금 선택된 나무 인덱스
@@ -77,18 +73,20 @@ public class PlacementManager : MonoBehaviour
         if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             return;
-        }
-     
+        }   
         if (!isTreeSelected)//나무가 선택되지 않았으면 로직 중단
         {
             Debug.Log("나무를 먼저 선택해!");
             return;
         }
-        if (currentGold < treeCost)//현재 보유한 골드가 나무 비용보다 적으면 중단
+
+        int cost = GameManager.Instance.gamegold.treeCost;//GameManager에 있는 GameGold(so)를 받아옴
+        if (GameManager.Instance.CurrentGold < cost)//현재 보유한 골드가 나무 비용보다 적으면 중단
         {
             Debug.Log("골드가 부족해! 나무를 심을 수 없어!");
             return;
         }
+
 
         //배치 대상 레이어(TreeSlot)만 감지하여 레이 발사
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -105,22 +103,30 @@ public class PlacementManager : MonoBehaviour
                     return;
                 }
 
-                //나무 배치 및 골드 차감
+                if (!GameManager.Instance.UseGold(cost))//여기서 실제로 골드를 차감 만약 차감 실패하면(돈이 부족한 경우 등) 배치 중단
+                {
+                    Debug.Log("골드가 부족해서 나무를 심을 수 없어!");
+                    return;
+                }
+
+                //나무 배치(골드는 GameManager의 UseGold()로 차감)
                 slot.PlantTree(treePrefabs[currentSelectedTreeIndex]);
-                currentGold -= treeCost;
+
 
                 //배치 완료 후 초기화
                 isTreeSelected = false;
                 Destroy(currentPreview);
                 currentPreview = null;
-                Debug.Log($"배치 완료! 남은 골드: {currentGold}");
+                Debug.Log($"배치 완료! 현재 남은 골드: {GameManager.Instance.CurrentGold}");
             }
         }
     }
 
     public void SelectTree(int index)//나무 UI버튼에 연결할 함수(OnClick)
     {
-        if (currentGold < treeCost)//만약 골드가 부족하면 미리보기 생성 및 선택 진입을 차단!
+        int cost = GameManager.Instance.gamegold.treeCost;//GameManager의 SO에서 비용 가져오기
+
+        if (GameManager.Instance.CurrentGold < cost)//만약 골드가 부족하면 미리보기 생성 및 선택 진입을 차단!
         {
             //여기에 UI 텍스트로 골드가 없다는걸 게임 내 화면에 띄우게 해보자 7/21 (아니면 만약 여러 오류 뜨는걸 하나의 함수에 몰아넣던지)
             Debug.Log("골드가 부족합니다! 나무를 선택할 수 없습니다.");

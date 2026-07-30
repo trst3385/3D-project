@@ -115,6 +115,13 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
         }
     }
 
+    public void AddGold(int amount)//몬스터 처치로 골드를 획득(추가)하는 함수
+    {
+        CurrentGold += amount;
+        Debug.Log($"골드 획득 성공! 현재 골드: {CurrentGold}");
+        //나중에 필요하면 여기에 골드 획득 이벤트도 추가할 수 있어!
+    }
+
     public bool UseGold(int amount)//골드를 사용(차감)하는 함수
     {
         if (CurrentGold >= amount)

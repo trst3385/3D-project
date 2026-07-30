@@ -222,6 +222,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   enemyData: {fileID: 11400000, guid: 875d11789147e124aa332fafbfedda32, type: 2}
   waypoints: []
+  isSelected: 0
+  rangeLineRenderer: {fileID: 0}
 --- !u!114 &5572874953393684818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235,6 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   isBoss: 1
+  goldPopupPrefab: {fileID: 6657668830350673809, guid: 57b56f0a22fad2441b06ee2c5cf882ce, type: 3}
 --- !u!114 &-6174335446040747433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,9 +262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 911e82d3417886947830e6e425e08f79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
-  attackEffectPrefab: {fileID: 8194992990867289339, guid: 99bc28c0d45f51c4fbac01080b73edc7, type: 3}
-  attackRange: 5
-  attackInterval: 2
   treeLayer:
     serializedVersion: 2
     m_Bits: 128

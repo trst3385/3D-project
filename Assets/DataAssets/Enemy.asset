@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c21b8c6e2b9b9d64fbb60f9e0ee369ed, type: 3}
   m_Name: Enemy
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  MaxHealth: 20
+  MaxHealth: 10
   Speed: 5
   Damage: 10
   AttackRange: 3
   AttackInterval: 2
   TreeDamage: 1
   attackEffectPrefab: {fileID: 8194992990867289339, guid: 99bc28c0d45f51c4fbac01080b73edc7, type: 3}
+  RewardGold: 10

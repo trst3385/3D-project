@@ -356,6 +356,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   isBoss: 0
+  goldPopupPrefab: {fileID: 6657668830350673809, guid: 57b56f0a22fad2441b06ee2c5cf882ce, type: 3}
 --- !u!114 &541191319907527301
 MonoBehaviour:
   m_ObjectHideFlags: 0

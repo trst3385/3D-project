@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1127886628521924145}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 7743476039785697007}
   - component: {fileID: 4035733862905036188}
   - component: {fileID: 3676256259508487342}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 1927433379684537163}
   - component: {fileID: 1020188110535336101}
   - component: {fileID: -4288707716997096231}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BossEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -324,7 +324,7 @@ GameObject:
   - component: {fileID: 2217167294093760071}
   - component: {fileID: 1569292743518150426}
   - component: {fileID: 3795849455982708868}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -399,7 +399,7 @@ GameObject:
   - component: {fileID: 7676094614757092267}
   - component: {fileID: 7462766205299820937}
   - component: {fileID: 6435445414958406899}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: EnemyHpBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}

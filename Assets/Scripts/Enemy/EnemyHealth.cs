@@ -11,27 +11,21 @@ public class EnemyHealth : MonoBehaviour
     [Header("획득 골드 팝업 설정")]
     public GameObject goldPopupPrefab;//여기에 인스펙터에서 팝업 프리팹을 넣어주기!
 
+    [Header("체력바 UI 설정")]
+    public GameObject hpBarPrefab;      //인스펙터에서 체력바 프리팹 연결(수동연결)
+    private GameObject spawnedHpBar;    //생성된 체력바 인스턴스
+    private Slider hpSlider;            //생성된 체력바의 슬라이더 컴포넌트
+    private RectTransform hpBarRectTransform;//위치 조작을 위한 RectTransform
+
     private Enemy enemyStats;//중심 스크립트의 SO 참조
     private int currentHealth;//현재 체력
-    private Slider hpSlider;
 
     void Awake()
     {
         enemyStats = GetComponent<Enemy>();//중심 스크립트(Enemy) 가져오기
-
-        //체력바 찾기
-        Transform hpBarTransform = transform.Find("EnemyHpBar");
-        if (hpBarTransform != null)
-        {
-            hpSlider = hpBarTransform.GetComponent<Slider>();
-        }
-        else
-        {
-            Debug.LogError($"{gameObject.name}에 EnemyHpBar가 없어!");
-        }
         if (enemyStats == null)
         {
-            Debug.LogError($"{gameObject.name}에 NormalEnemy 스크립트가 붙어있지 않아!");
+            Debug.LogError($"{gameObject.name}에 Enemy 스크립트가 붙어있지 않아!");
         }
     }
 
@@ -40,12 +34,57 @@ public class EnemyHealth : MonoBehaviour
         if (enemyStats != null && enemyStats.enemyData != null)//SO의 값을 적용
         {
             currentHealth = enemyStats.enemyData.MaxHealth;//실행 시 현재 체력의 SO의 최대 체력으로 적용
+        }
 
-            if (hpSlider != null)//체력값을 UI에게도 적용
+        CreateHpBar();//게임 시작 시 메인 캔버스에 체력바 생성 및 연결
+    }
+
+    void Update()
+    {
+        UpdateHpBarPosition();//몬스터가 살아있는 동안 매 프레임 머리 위 위치를 쫓아다니도록 갱신
+    }
+
+    void CreateHpBar()
+    {
+        if (hpBarPrefab != null)
+        {
+            GameObject mainCanvas = GameObject.Find("UI Canvas");
+            if (mainCanvas != null)
             {
-                hpSlider.maxValue = enemyStats.enemyData.MaxHealth;
-                hpSlider.minValue = 0;
-                hpSlider.value = currentHealth;
+                //메인 캔버스의 자식으로 체력바 생성
+                spawnedHpBar = Instantiate(hpBarPrefab, mainCanvas.transform);
+                hpSlider = spawnedHpBar.GetComponent<Slider>();
+                hpBarRectTransform = spawnedHpBar.GetComponent<RectTransform>();
+
+                if (hpSlider != null)
+                {
+                    hpSlider.maxValue = enemyStats.enemyData.MaxHealth;
+                    hpSlider.minValue = 0;
+                    hpSlider.value = currentHealth;
+                }
+                else Debug.LogError("생성된 체력바 프리팹에 Slider 컴포넌트가 없어!");
+            }
+            else Debug.LogWarning("이름이 'UI Canvas'인 오브젝트를 찾을 수 없어!");
+        }
+        else Debug.LogWarning("EnemyHealth에 hpBarPrefab이 연결되지 않았어!");
+    }
+
+    void UpdateHpBarPosition()
+    {
+        if (spawnedHpBar != null && Camera.main != null)
+        {
+            // 몬스터 몸 아래 월드 좌표 (Vector3.up 뒤의 숫자로 높이 조절 가능)
+            Vector3 worldPos = transform.position + Vector3.down * 1.5f;
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+
+            if (screenPos.z < 0)//카메라 뒤로 갔을 때 UI가 이상하게 튀는 현상 방지
+            {
+                spawnedHpBar.SetActive(false);
+            }
+            else
+            {
+                spawnedHpBar.SetActive(true);
+                hpBarRectTransform.position = screenPos;
             }
         }
     }
@@ -84,6 +123,13 @@ public class EnemyHealth : MonoBehaviour
         //4. 기존 사망 이벤트 및 파괴
         OnEnemyDie?.Invoke(isBoss);//(옵저버)구독자가 있다면 이벤트를 실행(Invoke)함, 보스면 true, 아니면 false를 전달
         Destroy(gameObject);
+    }
+    void OnDestroy()//몬스터 오브젝트가 어떤 이유로든 파괴될 때(사망, 도착지 도달 등) UI도 제거
+    {
+        if (spawnedHpBar != null)
+        {
+            Destroy(spawnedHpBar);
+        }
     }
 
     void SpawnGoldPopup(int goldAmount)//처치시 획득 골드 팝업 생성 함수

@@ -145,11 +145,27 @@ public class PlacementManager : MonoBehaviour
             Destroy(currentPreview);
         }
         currentPreview = Instantiate(treePrefabs[currentSelectedTreeIndex]);//변수에 미리보기 이미지 오브젝트가 생성
+
         Collider col = currentPreview.GetComponent<Collider>();//미리보기 이미지는 충돌 처리가 필요 없으니 콜라이더를 끄자
         if (col != null)
         {
             col.enabled = false;    
         }
+
+
+        //==========================================================
+        //2.미리보기 나무가 공격하거나 슬로우를 걸지 못하도록 AttackTree, SlowTree 같은 컴포넌트들을 전부 비활성화(Disable) 시키기
+        AttackTree attackTreeComponent = currentPreview.GetComponent<AttackTree>();
+        if (attackTreeComponent != null)
+        {
+            attackTreeComponent.enabled = false;
+        }
+        SlowTree slowTreeComponent = currentPreview.GetComponent<SlowTree>();
+        if (slowTreeComponent != null)
+        {
+            slowTreeComponent.enabled = false;
+        }
+        //==========================================================
 
         Debug.Log($"{treePrefabs[currentSelectedTreeIndex].name}을(를) 선택했어!");
     }

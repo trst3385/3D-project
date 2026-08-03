@@ -17,18 +17,13 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
     public Transform firePoint;//발사체가 생성될 위치
     public LineRenderer lineRenderer;//표적 조준
 
-    [SerializeField] private List<Transform> enemiesInRange = new List<Transform>();//사거리 내 적들 리스트
     private float fireCountdown = 0f;//공격 대기 시간
     private Transform target;
 
 
     void Start()
     {
-        SphereCollider col = GetComponent<SphereCollider>();
-        if (col != null)//트리거 콜라이더 사이즈 자동 설정 (SO의 range 사용)
-        {
-            col.radius = treeData.Range;//range변수를 우선으로 사거리를 정해서 콜라이더의 Radius값과 달라도 range값을 우선으로 정함
-        }                               
+        //8.3 물리 엔진(SphereCollider)을 안 쓰므로 Start는 비워둡니다.                         
     }
 
     void Update()
@@ -40,8 +35,7 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
             fireCountdown -= Time.deltaTime;
         }
 
-        //사거리 내 타겟 존재 여부에 따른 라인 렌더러 제어
-        if (target != null)
+        if (target != null)//사거리 내 타겟 존재 여부에 따른 라인 렌더러 제어
         {
             lineRenderer.enabled = true;
             lineRenderer.SetPosition(0, firePoint.position); //시작점: 타워 발사 위치(firePoint)
@@ -59,50 +53,44 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
         }
     }
 
-    void OnTriggerEnter(Collider other)//트리거 안에 적이 들어오면 리스트에 추가
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            enemiesInRange.Add(other.transform);
-        }
-    }
-    void OnTriggerExit(Collider other)//트리거 밖으로 적이 나가면 리스트에서 제거
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            enemiesInRange.Remove(other.transform);
-        }
-    }
-
+    //8.3 OnTriggerEnter와 OnTriggerExit 함수는 물리 엔진의 이벤트니까 이것들도 싹 지워준다.
+   
     
-    void UpdateTarget()//사거리 안의 적을 찾는 함수
+    void UpdateTarget()//사거리 안의 적을 찾는 함수, 8.3 물리 대신 순수 수학적 거리 계산으로 가장 가까운 적 찾기
     {
-        if (enemiesInRange.Count == 0)//리스트가 비어있으면 타겟을 null로 만들고 종료
-        {
-            target = null;
-            return;
-        }
+        //1. 씬에 있는 모든 Enemy를 직접 가져옴
+        Enemy[] allEnemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
-        enemiesInRange.RemoveAll(t => t == null);//죽어서 비활성화된 오브젝트는 리스트에서 미리 삭제
+        //2. 공격 사거리의 제곱 값 미리 계산 (루트 연산 최적화)
+        float rangeSq = treeData.Range * treeData.Range;
 
-        //리스트에서 가장 가까운 적 찾기
         float shortestDistance = Mathf.Infinity;
         Transform nearestEnemy = null;
 
-
-        //이제 리스트만 순회하면 됨 (OverlapSphere보다 훨씬 빠름)
-        foreach (Transform enemy in enemiesInRange)
+        foreach (Enemy enemy in allEnemies)
         {
-            float dist = Vector3.Distance(transform.position, enemy.position);
-            if (dist < shortestDistance)
+            if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
+
+            Transform enemyTransform = enemy.transform;
+
+            //타워와 적 사이의 벡터 거리 구하기 (높이 Y축 차이는 무시)
+            Vector3 dir = enemyTransform.position - transform.position;
+            dir.y = 0;
+            float distanceSq = dir.sqrMagnitude; // 거리의 제곱
+
+            if (distanceSq <= rangeSq)//사거리 내에 들어왔는지 확인
             {
-                shortestDistance = dist;
-                nearestEnemy = enemy;
+                if (distanceSq < shortestDistance)//그중에서도 가장 가까운 적을 타겟으로 삼기 위해 거리 비교
+                {
+                    shortestDistance = distanceSq;
+                    nearestEnemy = enemyTransform;
+                }
             }
         }
 
-        target = nearestEnemy;//범위 안에 들어온 오브젝트를 적으로 식별
+        target = nearestEnemy;//최종적으로 가장 가까운 적을 타겟으로 지정 (없으면 null)
     }
+
 
     void Shoot()
     {

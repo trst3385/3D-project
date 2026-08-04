@@ -134,31 +134,24 @@ public class EnemyHealth : MonoBehaviour
 
     void SpawnGoldPopup(int goldAmount)//처치시 획득 골드 팝업 생성 함수
     {
-        Debug.Log("SpawnGoldPopup 함수 실행됨!");
-
         if (goldPopupPrefab != null)
         {
-            //몬스터 머리 위 월드 좌표를 화면 2D 좌표로 변환
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0f);//뒤의 ~f로 획득골드 위치 조절
-
-            //아무 캔버스나 찾지 말고, 이름이 "UI Canvas"인 메인 캔버스를 콕 집어서 찾기!
-            GameObject mainCanvas = GameObject.Find("UI Canvas");
+            GameObject mainCanvas = GameObject.Find("UI Canvas");//아무 캔버스나 찾지 말고, 이름이 "UI Canvas"인 메인 캔버스를 콕 집어서 찾기
 
             if (mainCanvas != null)
             {
-                //찾은 메인 캔버스의 자식으로 팝업 생성
+                //캔버스의 자식으로 팝업 생성 (위치 계산은 더 이상 여기서 안 함, GoldPopupText 스크립트에서 처리)
                 GameObject popupObj = Instantiate(goldPopupPrefab, mainCanvas.transform);
-                popupObj.transform.position = screenPos;
-
                 GoldPopupText popup = popupObj.GetComponent<GoldPopupText>();
-                if (popup != null)
+
+                if (popup != null)//몬스터의 현재 3D 월드 좌표와 골드 양을 함께 전달
                 {
-                    popup.Setup(goldAmount);
+                    popup.Setup(goldAmount, transform.position);
                 }
             }
             else
             {
-                Debug.LogWarning("이름이 'Canvas'인 오브젝트를 찾을 수 없어! 캔버스 이름이 맞는지 확인해줘!");
+                Debug.LogWarning("이름이 'UI Canvas'인 오브젝트를 찾을 수 없어! 캔버스 이름이 맞는지 확인해줘!");
             }
         }       
     }

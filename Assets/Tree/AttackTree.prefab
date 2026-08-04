@@ -179,7 +179,6 @@ MonoBehaviour:
   treeData: {fileID: 11400000, guid: 854ab08952cbf43448643083736caa58, type: 2}
   firePoint: {fileID: 39364650489904606}
   lineRenderer: {fileID: 8403852045868682041}
-  enemiesInRange: []
 --- !u!135 &6881924530841533212
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -197,7 +196,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Radius: 10
   m_Center: {x: 0, y: 0, z: 0}

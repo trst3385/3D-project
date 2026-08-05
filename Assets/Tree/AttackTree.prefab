@@ -102,7 +102,6 @@ GameObject:
   - component: {fileID: 3703824310592334761}
   - component: {fileID: 3239098134471697059}
   - component: {fileID: 8395540203278039132}
-  - component: {fileID: 6881924530841533212}
   - component: {fileID: 8403852045868682041}
   m_Layer: 7
   m_Name: AttackTree
@@ -179,27 +178,6 @@ MonoBehaviour:
   treeData: {fileID: 11400000, guid: 854ab08952cbf43448643083736caa58, type: 2}
   firePoint: {fileID: 39364650489904606}
   lineRenderer: {fileID: 8403852045868682041}
---- !u!135 &6881924530841533212
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3207333913058670643}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 10
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!120 &8403852045868682041
 LineRenderer:
   serializedVersion: 3

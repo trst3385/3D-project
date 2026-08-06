@@ -87,7 +87,10 @@
 
 ### 🛠 해결 및 결과 (Solution & Result)
 
-- 핵심 최적화 코드 예시 (AttackTree.cs / SlowTree.cs 공통 로직)
+- **공통 최적화 로직의 핵심 흐름:**
+  1. `Object.FindObjectsByType`을 통해 물리 콜라이더 의존성을 제거하고 씬 내 타겟을 직접 탐색합니다.
+  2. `Vector3.Distance`(루트 연산) 대신 사거리를 미리 제곱(`rangeSq`)해 두고, `sqrMagnitude`를 비교하여 CPU 연산 부하를 최적화했습니다.
+  3. `dir.y = 0` 처리를 통해 디펜스 게임의 평면 사거리 판정 오차를 사전에 방지했습니다.
 ```
 //물리 엔진(OverlapSphere 등)을 배제하고 씬 내 오브젝트를 대상으로 순수 수학적 거리 계산 수행
 TreeHealth[] allTrees = Object.FindObjectsByType<TreeHealth>(FindObjectsSortMode.None);

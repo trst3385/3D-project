@@ -71,71 +71,57 @@
 
 
 <details>
-<summary><b>몬스터 공격 사거리와 시각적 범위의 불일치 및 물리 연산 부하 개선</b></summary>
+<summary><b>불필요한 물리 연산 제거 및 순수 수학적 거리 계산(sqrMagnitude)을 통한 사거리 탐색 최적화</b></summary>
 <br/>
 
 ### 🚨 문제 상황 (Problem)
 
-- 기존에는 `LineRenderer`로 그려지는 원형 사거리와 실제 몬스터의 감지 범위가 일치하지 않아, 시각적 원 밖에서 나무가 공격당하는 현상이 발생했습니다.
-- 물리 엔진(`OverlapSphere`)과 `SphereCollider`에 의존하여 충돌을 감지하다 보니, 불필요한 물리 연산 부하가 생기고 감지 영역이 모호해졌습니다.
+- 기존에는 `LineRenderer` 범위와 실제 충돌 범위가 일치하지 않거나, 물리 엔진(`OverlapSphere, SphereCollider`, 트리거 이벤트)에 전적으로 의존하여 충돌을 감지했습니다.
+- 물리 엔진(`OverlapSphere`)과 `SphereCollider`에 의존하여 충돌을 감지하다 보니, 이로 인해 시각적 범위와 실제 판정의 불일치, 불필요한 물리 연산 부하, 그리고 오브젝트 간 높은 결합도 문제가 발생했습니다.
 
 ### 🔍 원인 분석 및 접근 (Insight)
 
-- 물리 콜라이더를 계속 유지하면 몬스터와 타겟 간의 결합도가 불필요하게 높아지고, 감지 영역에 혼선이 생긴다고 판단했습니다.
-- 무거운 물리 연산 대신, 순수 수학적 거리 계산인 `sqrMagnitude` 방식을 도입하여 성능과 정확도를 모두 잡기로 결정했습니다.
-- 단일 책임 원칙(SRP)을 지키기 위해 탐색 책임을 전담하는 `GetNearestTree()` 함수로 로직을 분리하여 아키텍처의 결합도를 낮췄습니다.
+- 물리 콜라이더를 계속 유지하면 오브젝트 간의 불필요한 의존성이 높아지고, 모호한 감지 영역으로 인해 버그 대처가 까다로워진다고 판단했습니다.
+- 무거운 물리 연산 대신, 루트 연산(`Vector3.Distance`)을 배제하고 제곱 거리를 비교하는 순수 수학적 거리 계산(`sqrMagnitude`) 방식을 도입하여 성능과 정확도를 모두 잡기로 결정했습니다.
+- 이를 공격형 타워(AttackTree), 슬로우 타워(SlowTree), 그리고 몬스터(`EnemyAttack.cs`) 전반에 공통으로 적용하여 아키텍처의 일관성을 높였습니다.
 
 ### 🛠 해결 및 결과 (Solution & Result)
 
+- 핵심 최적화 코드 예시 (AttackTree.cs / SlowTree.cs 공통 로직)
 ```
-//EnemyAttack.cs
-private bool isTargetInRange;
-private float timer;
+//물리 엔진(OverlapSphere 등)을 배제하고 씬 내 오브젝트를 대상으로 순수 수학적 거리 계산 수행
+TreeHealth[] allTrees = Object.FindObjectsByType<TreeHealth>(FindObjectsSortMode.None);
 
-void Update()
+float rangeSq = treeData.Range * treeData.Range;//사거리 제곱 미리 계산
+
+foreach (var target in allTrees)
 {
-    TreeHealth target = GetNearestTree();
+    if (target == null) continue;
 
-    if (target != null)
+    //Y축 높이 차이를 배제하고 평면 거리 계산 후 sqrMagnitude 적용
+    Vector3 dir = target.transform.position - transform.position;
+    dir.y = 0; 
+    float distanceSq = dir.sqrMagnitude; 
+
+    if (distanceSq <= rangeSq)
     {
-        if (!isTargetInRange || timer >= enemy.enemyData.AttackInterval)
-        {
-            PerformAttack(target);
-            timer = 0f;
-            isTargetInRange = true;
-        }
-        timer += Time.deltaTime;
-    }
-    else
-    {
-        isTargetInRange = false;
-        timer = 0f;
+        //가장 가까운 타겟 선정 또는 범위 내 리스트 관리 로직 수행
     }
 }
-
-TreeHealth GetNearestTree()//핵심! 물리엔진을 사용하지 않고 수학계산으로 엔진 최적화!
-{
-    TreeHealth nearest = null;
-    float minDist = Mathf.Infinity;
-    float sqrRange = enemy.enemyData.AttackRange * enemy.enemyData.AttackRange;
-
-    //물리 엔진 대신 순수 수학적 거리(sqrMagnitude)로 최적화된 탐색 수행
-    foreach (var tree in Object.FindObjectsByType<TreeHealth>(FindObjectsSortMode.None))
-    {
-        if (tree == null) continue;
-        float sqrDist = (transform.position - tree.transform.position).sqrMagnitude;
-
-        if (sqrDist <= sqrRange && sqrDist < minDist)
-        {
-            minDist = sqrDist;
-            nearest = tree;
-        }
-    }
-    return nearest;
-}
 ```
-- 나무 프리팹에서 불필요한 `SphereCollider`를 완전히 제거하여 물리 연산 부하를 줄이고 로직의 명확성을 확보했습니다.
-- 스크립트 간 의존성(결합도)을 낮추어 향후 다른 타겟이나 몬스터 스크립트 확장 시 유지보수가 용이한 구조로 개선했습니다.
+- 모든 타워 및 몬스터 프리팹에서 불필요한 SphereCollider를 완전히 제거하여 물리 연산 부하를 대폭 줄이고 로직의 명확성을 확보했습니다.
+- 스크립트 간 의존성(결합도)을 낮추어 향후 새로운 타워나 몬스터 타입이 추가되더라도 확장성이 높은 견고한 구조를 구축했습니다.
+
+
+###💡배운 점 (Lessons Learned)
+
+1. **물리 엔진과 커스텀 로직의 트레이드오프(Trade-off) 이해**:
+   유니티의 물리 엔진(Collider, OverlapSphere)이 편리하지만, 프로젝트의 성격(예: 디펜스 게임의 다수 타워/몬스터 탐지)에 따라 오히려 불필요한 연산 부하와 시각적 오차(사거리 불일치)를 유발할 수 있음을 체감했습니다. 상황에 맞게 물리 엔진을    과감히 걷어내고 순수 코드로 제어하는 결단력의 중요성을 배웠습니다.
+2. **제곱 거리 연산(sqrMagnitude)을 통한 성능 최적화 마인드셋**:
+   매 프레임 거리 비교 시 무거운 루트 연산(Vector3.Distance 또는 피타고라스 제곱근) 대신, 미리 제곱한 값을 비교하는 `sqrMagnitude`를 적용함으로써 컴퓨터 과학적 관점에서 성능 최적화를 고려하는 습관을 기를 수 있었습니다.
+3. **프로젝트 전반의 아키텍처 일관성 확보**:
+   단발성 수정에 그치지 않고, 공격형 타워(AttackTree), 슬로우 타워(SlowTree), 그리고 몬스터(EnemyAttack)에 이르기까지 프로젝트 전반의 탐색 로직을 일관된 구조로 리팩토링하면서, 확장성 높은 코드가 무엇인지 깊이 있게 고민해 보는 소중한 계기가 되었습니다.
+
 
 </details>
 
@@ -186,7 +172,7 @@ void Start()
 }
 ```
 
-  
+
 ### 💡 배운 점
 
 1. **유니티 검색 메커니즘 이해**: 호출 시점과 오브젝트의 활성/비활성 여부에 따라 탐색 함수들이 제각각 다른 결과를 도출함을 이해하였습니다. 상황에 맞는 적절한 API 선택이 중요함을 배웠습니다.

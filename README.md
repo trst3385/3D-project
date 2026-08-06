@@ -66,19 +66,105 @@
 
 ---
 
+
 ##  주요 문제 해결 과정 & 배운 점
+
+
+<details>
+<summary><b>몬스터 공격 사거리와 시각적 범위의 불일치 및 물리 연산 부하 개선</b></summary>
+<br/>
+
+### 🚨 문제 상황 (Problem)
+
+- 기존에는 `LineRenderer`로 그려지는 원형 사거리와 실제 몬스터의 감지 범위가 일치하지 않아, 시각적 원 밖에서 나무가 공격당하는 현상이 발생했습니다.
+- 물리 엔진(`OverlapSphere`)과 `SphereCollider`에 의존하여 충돌을 감지하다 보니, 불필요한 물리 연산 부하가 생기고 감지 영역이 모호해졌습니다.
+- 또한, 사거리에 진입해도 공격 타이머가 0초부터 다시 리셋되는 로직 때문에 첫 타격 시 불필요한 공격 딜레이가 발생했습니다.
+
+### 🔍 원인 분석 및 접근 (Insight)
+
+- 물리 콜라이더를 계속 유지하면 몬스터와 타겟 간의 결합도가 불필요하게 높아지고, 감지 영역에 혼선이 생긴다고 판단했습니다.
+- 무거운 물리 연산 대신, 순수 수학적 거리 계산인 `sqrMagnitude` 방식을 도입하여 성능과 정확도를 모두 잡기로 결정했습니다.
+- 단일 책임 원칙(SRP)을 지키기 위해 탐색 책임을 전담하는 `GetNearestTree()` 함수로 로직을 분리하고, `isTargetInRange` 플래그를 도입하여 사거리 진입 즉시 첫 타격이 들어가도록 설계했습니다.
+
+### 🛠 해결 및 결과 (Solution & Result)
+
+```
+//EnemyAttack.cs
+private bool isTargetInRange = false;//사거리 내 타겟 존재 여부 플래그
+
+void Update()
+{
+    //1. 순수 수학적 거리 계산으로 가장 가까운 나무 탐색
+    TreeHealth nearestTree = GetNearestTree();
+
+    if (nearestTree != null)
+    {
+        if (!isTargetInRange) // 방금 사거리 안으로 진입한 순간
+        {
+            PerformAttack(nearestTree); // 즉시 첫 타격 실행 (딜레이 제거)
+            timer = 0f;
+            isTargetInRange = true;
+        }
+        else // 사거리 내에 머무는 중 -> 설정된 주기마다 공격
+        {
+            timer += Time.deltaTime;
+            if (timer >= enemy.enemyData.AttackInterval)
+            {
+                PerformAttack(nearestTree);
+                timer = 0f;
+            }
+        }
+    }
+    else // 사거리를 벗어남
+    {
+        isTargetInRange = false;
+        timer = 0f;
+    }
+}
+
+TreeHealth GetNearestTree()//핵심! 물리 엔진을 사용하지 않고 수학적 계산으로 엔진 최적화
+{
+    //물리 엔진(OverlapSphere) 대신 씬 전체의 타겟을 대상으로 순수 수학적 거리 계산 수행
+    TreeHealth[] allTrees = Object.FindObjectsByType<TreeHealth>(FindObjectsSortMode.None);
+
+    TreeHealth nearestTree = null;
+    float minSqrDistance = Mathf.Infinity;
+    float sqrAttackRange = enemy.enemyData.AttackRange * enemy.enemyData.AttackRange;//제곱 거리 최적화
+
+    foreach (var tree in allTrees)
+    {
+        if (tree == null) continue;
+
+        //제곱근 연산을 배제한 sqrMagnitude로 성능 부하 방지
+        float sqrDist = (transform.position - tree.transform.position).sqrMagnitude;
+
+        if (sqrDist <= sqrAttackRange && sqrDist < minSqrDistance)
+        {
+            minSqrDistance = sqrDist;
+            nearestTree = tree;
+        }
+    }
+    return nearestTree;
+}
+```
+- 나무 프리팹에서 불필요한 `SphereCollider`를 완전히 제거하여 물리 연산 부하를 줄이고 로직의 명확성을 확보했습니다.
+- 몬스터 사거리 진입 즉시 딜레이 없는 타격 + 이후 설정된 주기(`AttackInterval`)에 맞춘 안정적인 공격 사이클을 구현했습니다.
+- 스크립트 간 의존성(결합도)을 낮추어 향후 다른 타겟이나 몬스터 스크립트 확장 시 유지보수가 용이한 구조로 개선했습니다.
+
+</details>
 
 
 <details>
 <summary><b>비활성화된 UI 오브젝트 탐색 실패 문제 해결 및 자동 참조 로직 설계(PauseManager.cs)</b></summary>
 <br/>
 
-### 🚨 문제점
+
+### 🚨 문제 상황 (Problem)
 
 - GameObject.Find()를 사용하여 PausePanel을 탐색하려 했으나, UI가 비활성화(SetActive(false))된 상태일 경우 탐색이 불가능하여 null이 반환되는 문제가 발생했습니다.
 - 기존의 수동 드래그 앤 드롭(Inspector 연결) 방식은 프로젝트 규모가 커질수록 참조 누락의 위험이 있고, 유지보수성이 떨어진다는 단점이 있었습니다.
       
-### 🔍 원인 분석
+### 🔍 원인 분석 및 접근 (Insight)
 
 - **탐색 제한**: 유니티의 GameObject.Find()는 활성화된 오브젝트만을 대상으로 탐색을 수행하므로, 비활성화된 오브젝트는 찾을 수 없는 설계적 제약이 있습니다.
 - **조용한 실패(Silent Failure)**: null이 반환되었음에도 불구하고, if (pausePanel != null)과 같은 방어 코드에 의해 로직이 정상적으로 건너뛰어지면서, 시스템이 '작동하지 않음'을 인지하기까지 시간이 지체되었습니다.
@@ -86,11 +172,8 @@
 ### 🛠 해결 과정
 
 1. **전역 탐색 로직 도입**: Resources.FindObjectsOfTypeAll<Canvas>()를 사용하여 씬 내의 모든 캔버스(비활성화 상태 포함)를 탐색 범위에 포함하였습니다.
- 
 2. **인스턴스 필터링**: canvas.gameObject.scene.name != null 조건을 추가하여, 프리팹이 아닌 실제 씬에 배치된 캔버스 인스턴스만을 정교하게 필터링하였습니다.
-   
 3. **계층 탐색 구현**: Transform.Find("PausePanel") 메서드를 활용하여 캔버스 자식 오브젝트 중 특정 이름의 UI를 동적으로 탐색하고 할당하였습니다.
-   
 4. **시스템 자동화**: 별도의 인스펙터 연결 없이 Start() 시점에 시스템이 스스로 UI를 찾아 연결하도록 설계하여, 개발 편의성과 시스템의 견고함을 동시에 확보하였습니다.
 💻 핵심 코드 구현
 ```csharp 
@@ -138,15 +221,18 @@ void Start()
       
 이 프로젝트는 하드코딩된 로직을 ScriptableObject 기반의 데이터 구조로 전환하여 **시스템의 확장성과 코드의 유지보수성** 을 높이는 데 중점을 두고 개발되었습니다.<br/>
 
-### 🚨 문제점
+### 🚨 문제 상황 (Problem)
+
 - 몬스터 스탯, 스폰 속도 등 라운드별 설정값이 `EnemySpawner`와 `GameManager` 매니저 스크립트에 하드코딩되어 있어, 수치 변경 시마다 다수의 스크립트를 수정해야 하는 비효율이 발생했습니다.
 - 이런 방식은 매니저 간 데이터 참조가 분산되어 있어 데이터 일관성을 유지하기 어렵고, 코드의 결합도(Coupling)가 높아 유지보수에 어려움이 있었습니다.
 
-### 🔍 원인 분석
+### 🔍 원인 분석 및 접근 (Insight)
+
 - **데이터와 로직의 혼재**: 데이터값이 코드 내부에 직접 명시되어 있어, 게임 디자인 변경이 코드 수정으로 이어지는 구조였습니다.
 - **분산된 의존성**: 여러 매니저가 각기 다른 곳에서 데이터를 참조하여, 시스템 전체의 데이터가 여러 스크립트에 흩어져 있어, **어느 쪽이 최신 설정값인지 관리하기가 매우 번거로웠습니다.**
 
 ### 🛠 해결 과정
+
 1. **데이터 구조화(ScriptableObject)**: `RoundData` SO를 생성하여 이곳에 등장할 몬스터의 프리팹, 스폰 간격 등 라운드 설정을 에셋 파일로 분리했습니다.
 2. **중앙 집중형 허브 설계**: `GameManager`를 데이터 허브로 구축하여 이 매니자 스크립트에서만 `RoundData` SO를 연결하고, 나머지 매니저가 `GameManager`를 통해서만 데이터에 접근하도록 구조를 변경했습니다.
 3. **이벤트 기반 통신(Action/Delegate)**: `OnBossSpawn`, `OnGameClear` 등의 이벤트(옵저버 패턴)를 도입하여 매니저 간의 직접적인 참조를 제거하고 결합도를 낮췄습니다.

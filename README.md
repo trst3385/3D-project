@@ -78,77 +78,63 @@
 
 - 기존에는 `LineRenderer`로 그려지는 원형 사거리와 실제 몬스터의 감지 범위가 일치하지 않아, 시각적 원 밖에서 나무가 공격당하는 현상이 발생했습니다.
 - 물리 엔진(`OverlapSphere`)과 `SphereCollider`에 의존하여 충돌을 감지하다 보니, 불필요한 물리 연산 부하가 생기고 감지 영역이 모호해졌습니다.
-- 또한, 사거리에 진입해도 공격 타이머가 0초부터 다시 리셋되는 로직 때문에 첫 타격 시 불필요한 공격 딜레이가 발생했습니다.
 
 ### 🔍 원인 분석 및 접근 (Insight)
 
 - 물리 콜라이더를 계속 유지하면 몬스터와 타겟 간의 결합도가 불필요하게 높아지고, 감지 영역에 혼선이 생긴다고 판단했습니다.
 - 무거운 물리 연산 대신, 순수 수학적 거리 계산인 `sqrMagnitude` 방식을 도입하여 성능과 정확도를 모두 잡기로 결정했습니다.
-- 단일 책임 원칙(SRP)을 지키기 위해 탐색 책임을 전담하는 `GetNearestTree()` 함수로 로직을 분리하고, `isTargetInRange` 플래그를 도입하여 사거리 진입 즉시 첫 타격이 들어가도록 설계했습니다.
+- 단일 책임 원칙(SRP)을 지키기 위해 탐색 책임을 전담하는 `GetNearestTree()` 함수로 로직을 분리하여 아키텍처의 결합도를 낮췄습니다.
 
 ### 🛠 해결 및 결과 (Solution & Result)
 
 ```
 //EnemyAttack.cs
-private bool isTargetInRange = false;//사거리 내 타겟 존재 여부 플래그
+private bool isTargetInRange;
+private float timer;
 
 void Update()
 {
-    //1. 순수 수학적 거리 계산으로 가장 가까운 나무 탐색
-    TreeHealth nearestTree = GetNearestTree();
+    TreeHealth target = GetNearestTree();
 
-    if (nearestTree != null)
+    if (target != null)
     {
-        if (!isTargetInRange) // 방금 사거리 안으로 진입한 순간
+        if (!isTargetInRange || timer >= enemy.enemyData.AttackInterval)
         {
-            PerformAttack(nearestTree); // 즉시 첫 타격 실행 (딜레이 제거)
+            PerformAttack(target);
             timer = 0f;
             isTargetInRange = true;
         }
-        else // 사거리 내에 머무는 중 -> 설정된 주기마다 공격
-        {
-            timer += Time.deltaTime;
-            if (timer >= enemy.enemyData.AttackInterval)
-            {
-                PerformAttack(nearestTree);
-                timer = 0f;
-            }
-        }
+        timer += Time.deltaTime;
     }
-    else // 사거리를 벗어남
+    else
     {
         isTargetInRange = false;
         timer = 0f;
     }
 }
 
-TreeHealth GetNearestTree()//핵심! 물리 엔진을 사용하지 않고 수학적 계산으로 엔진 최적화
+TreeHealth GetNearestTree()//핵심! 물리엔진을 사용하지 않고 수학계산으로 엔진 최적화!
 {
-    //물리 엔진(OverlapSphere) 대신 씬 전체의 타겟을 대상으로 순수 수학적 거리 계산 수행
-    TreeHealth[] allTrees = Object.FindObjectsByType<TreeHealth>(FindObjectsSortMode.None);
+    TreeHealth nearest = null;
+    float minDist = Mathf.Infinity;
+    float sqrRange = enemy.enemyData.AttackRange * enemy.enemyData.AttackRange;
 
-    TreeHealth nearestTree = null;
-    float minSqrDistance = Mathf.Infinity;
-    float sqrAttackRange = enemy.enemyData.AttackRange * enemy.enemyData.AttackRange;//제곱 거리 최적화
-
-    foreach (var tree in allTrees)
+    //물리 엔진 대신 순수 수학적 거리(sqrMagnitude)로 최적화된 탐색 수행
+    foreach (var tree in Object.FindObjectsByType<TreeHealth>(FindObjectsSortMode.None))
     {
         if (tree == null) continue;
-
-        //제곱근 연산을 배제한 sqrMagnitude로 성능 부하 방지
         float sqrDist = (transform.position - tree.transform.position).sqrMagnitude;
 
-        if (sqrDist <= sqrAttackRange && sqrDist < minSqrDistance)
+        if (sqrDist <= sqrRange && sqrDist < minDist)
         {
-            minSqrDistance = sqrDist;
-            nearestTree = tree;
+            minDist = sqrDist;
+            nearest = tree;
         }
     }
-    return nearestTree;
+    return nearest;
 }
 ```
 - 나무 프리팹에서 불필요한 `SphereCollider`를 완전히 제거하여 물리 연산 부하를 줄이고 로직의 명확성을 확보했습니다.
-- 몬스터 사거리 진입 즉시 딜레이 없는 타격 + 이후 설정된 주기(`AttackInterval`)에 맞춘 안정적인 공격 사이클을 구현했습니다.
 - 스크립트 간 의존성(결합도)을 낮추어 향후 다른 타겟이나 몬스터 스크립트 확장 시 유지보수가 용이한 구조로 개선했습니다.
 
 </details>

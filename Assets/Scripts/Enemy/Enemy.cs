@@ -20,12 +20,25 @@ public class Enemy : MonoBehaviour
         attack = GetComponent<EnemyAttack>();
         movement = GetComponent<EnemyMovement>();
         currentSpeed = enemyData.Speed;
+
+        if (GameManager.Instance != null)//생성되자마자 GameManager의 활성 적 리스트에 등록
+        {
+            GameManager.Instance.AddEnemy(this);
+        }
     }
 
 
     void Update()
     {
         movement.Move(currentSpeed, OnReachedEnd);//EnemyMovement의 이동로직 사용
+    }
+
+    void OnDestroy()//파괴될 때(사망, 목적지 도달, 라운드 클리어로 삭제 등) GameManager의 리스트에서 제거
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RemoveEnemy(this);
+        }
     }
 
     //------슬로우 로직 등은 여기에 유지-----

@@ -38,16 +38,17 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
             }
         }
 
-        //2. 물리 엔진 대신 씬에 있는 모든 Enemy를 직접 가져오기
-        Enemy[] allEnemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        //8.8 이전에는 FindObjectsByType로 씬을 뒤져서 Enemy를 찾았기에 부하의 원인이 될 수 있었어
+        //Enemy[] allEnemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
-        //사거리의 제곱 값을 미리 구해둠 (루트 연산을 피하는 컴퓨터 과학적 최적화)
-        float rangeSq = treeData.SlowRange * treeData.SlowRange;
+        var allEnemies = GameManager.Instance.activeEnemies;//2. GameManager의 activeEnemies 리스트를 가져와서 순회
 
-        //3. 씬에 있는 모든 적들을 하나씩 돌며 거리 비교
-        foreach (Enemy enemy in allEnemies)
+        float rangeSq = treeData.SlowRange * treeData.SlowRange;//사거리의 제곱 값을 미리 구해둠(AttackTree와 유사한 방식)
+
+
+        foreach (Enemy enemy in allEnemies)//3. 씬에 있는 모든 적들을 하나씩 돌며 거리 비교
         {
-            if (enemy == null) continue;
+            if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
 
             Transform enemyTransform = enemy.transform;
 

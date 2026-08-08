@@ -6,15 +6,19 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
 {
     public static GameManager Instance;//싱글톤
 
+
     //외부에서 현재 라운드 번호를 '읽을 수는 있지만', 함부로 값을 바꿀 수 없도록(private set) 보호하고 인스펙터 창에서 숨김
     public int CurrentRoundIndex { get; private set; }
     //외부에서 현재 라운드 데이터(SO)를 '읽을 수는 있지만', 함부로 교체할 수 없도록 보호하고 인스펙터 창에서 숨김
     public RoundData currentRoundData { get; private set; }//이 스크립트에서만 SO연결, 다른 매니저 스크립트에서 GameManager에 연결된 SO 값을 받아옴
 
+
+    public List<Enemy> activeEnemies = new List<Enemy>();//현재 살아있는 적들
+
+
     [Header("라운드 설정")]
     public List<RoundData> roundDatas;//여러 라운드 데이터를 미리 SO로 만들어두고 리스트에 담기
 
-    [SerializeField] private int startRoundIndex = 0;//숫자를 바꿔 실행 시 웨이브 순서 설정(0부터 1웨이브 시작)
 
     //----게임 골드----
     [Header("게임 설정 데이터")]
@@ -23,6 +27,8 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
     public int CurrentGold { get; private set; } // 외부에서 읽을 수만 있게 보호
     //-----------------
 
+
+    [SerializeField] private int startRoundIndex = 0;//숫자를 바꿔 실행 시 웨이브 순서 설정(0부터 1웨이브 시작)
     private int defeatedEnemyCount = 0;//처치한 몬스터 수
 
     //------------이벤트------------------------------
@@ -64,9 +70,25 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
             CurrentGold = 50;//혹시 몰라 예외 처리
             Debug.LogWarning("GameGold SO가 GameManager에 연결되지 않았어!");
         }
-    } 
+    }
 
-  
+    public void AddEnemy(Enemy enemy)//적 리스트에 등록
+    {
+        if (!activeEnemies.Contains(enemy))//중복 방지: 리스트에 등록된 적이 실수로 또 추가되는 걸 막음
+        {
+            activeEnemies.Add(enemy);//리스트에 추가: 새로운 적이 생성(스폰)될 때 이 함수를 호출해서 리스트에 집어넣어
+        }
+    }
+
+    public void RemoveEnemy(Enemy enemy)//적 리스트에 제거
+    {
+        if (activeEnemies.Contains(enemy))//존재 확인: 리스트에 실제로 해당 적이 들어있는지 안전하게 확인한 뒤에 지움
+        {
+            activeEnemies.Remove(enemy);//리스트에 제거: 몬스터가 죽거나 파괴될 때 리스트에서 빼내서 명단과 메모리에서 비워줘
+        }
+    }
+
+
     public void RegisterEnemy(EnemyHealth enemy)//몬스터가 자기 자신(EnemyHealth)을 넘겨주면, 
     {                                           //그 몬스터의 사망 이벤트를 우리(GameManager)가 구독함
         enemy.OnEnemyDie += (isBoss) => {

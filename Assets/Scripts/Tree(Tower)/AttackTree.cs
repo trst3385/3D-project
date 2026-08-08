@@ -58,11 +58,12 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
     
     void UpdateTarget()//사거리 안의 적을 찾는 함수, 8.3 물리 대신 순수 수학적 거리 계산으로 가장 가까운 적 찾기
     {
-        //1. 씬에 있는 모든 Enemy를 직접 가져옴
-        Enemy[] allEnemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        //8.8 이전에는 FindObjectsByType로 씬을 뒤져서 Enemy를 찾았기에 부하의 원인이 될 수 있었어
+        //Enemy[] allEnemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
-        //2. 공격 사거리의 제곱 값 미리 계산 (루트 연산 최적화)
-        float rangeSq = treeData.Range * treeData.Range;
+        var allEnemies = GameManager.Instance.activeEnemies;//1. 씬 전체를 뒤지는 대신, GameManager의 activeEnemies 리스트를 직접 참조
+
+        float rangeSq = treeData.Range * treeData.Range;//2. 공격 사거리의 제곱 값 미리 계산 (루트 연산 최적화)
 
         float shortestDistance = Mathf.Infinity;
         Transform nearestEnemy = null;
@@ -76,7 +77,7 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
             //타워와 적 사이의 벡터 거리 구하기 (높이 Y축 차이는 무시)
             Vector3 dir = enemyTransform.position - transform.position;
             dir.y = 0;
-            float distanceSq = dir.sqrMagnitude; // 거리의 제곱
+            float distanceSq = dir.sqrMagnitude;//거리의 제곱
 
             if (distanceSq <= rangeSq)//사거리 내에 들어왔는지 확인
             {

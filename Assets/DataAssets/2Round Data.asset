@@ -15,4 +15,6 @@ MonoBehaviour:
   enemyPrefab: {fileID: 8084569729449921211, guid: 46fa949b13a7bd043b4244b13cffd617, type: 3}
   enemyCount: 20
   spawnInterval: 1.5
+  enemyData: {fileID: 11400000, guid: e9c862cc103b7ac45a89c2f6e13cee6e, type: 2}
   bossPrefab: {fileID: 4565039326078445810, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
+  bossData: {fileID: 11400000, guid: 875d11789147e124aa332fafbfedda32, type: 2}

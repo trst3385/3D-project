@@ -7,16 +7,12 @@ public class EnemyMovement : MonoBehaviour
     private int currentIndex = 0;//현재 추적 중인 waypoints의 인덱스. 
                                  //도착 판정 시 1씩 증가하며 다음 목적지를 가리킴
 
-    void Start()
+    public void Init(GameObject waypointGroup)//스포너가 몬스터 생성 시 웨이포인트 그룹을 알려주게 함
     {
-        GameObject group = GameObject.Find("WaypointGroup");//게임이 시작될 때 WaypointGroup이라는 이름을 가진 오브젝트를 찾아서,                                                  
-        if (group != null)                                   //그 자식들을 리스트에 자동으로 다 넣어버리는 로직
+        waypoints = new List<GameObject>();
+        foreach (Transform child in waypointGroup.transform)
         {
-            waypoints = new List<GameObject>();
-            foreach (Transform child in group.transform)
-            {
-                waypoints.Add(child.gameObject);
-            }
+            waypoints.Add(child.gameObject);
         }
     }
 

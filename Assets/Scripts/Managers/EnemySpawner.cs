@@ -6,8 +6,9 @@ public class EnemySpawner : MonoBehaviour
     [Header("몬스터 이동 방향 설정")]
     public Transform spawnPoint;//Waypoint 1번 위치(지금은 인스펙터 연결로)
 
+    private bool isBossSpawned = false;//보스 몬스터 중복 소환 방지
 
-    private bool isBossSpawned = false; //보스 몬스터 중복 소환 방지
+    public GameObject waypointGroup;//웨이포인트 그룹 연결
 
     void Start()
     {
@@ -37,7 +38,23 @@ public class EnemySpawner : MonoBehaviour
         isBossSpawned = true;
 
         GameObject bossObj = Instantiate(currentData.bossPrefab, spawnPoint.position, Quaternion.identity);//SO에 들어있는 보스 프리팹 사용
+
+        Enemy bossEnemy = bossObj.GetComponent<Enemy>();//컴포넌트들을 가져와서 스포너가 직접 초기화 메서드 호출
         EnemyHealth bossHealth = bossObj.GetComponent<EnemyHealth>();
+        EnemyMovement bossMovement = bossObj.GetComponent<EnemyMovement>();
+
+        //데이터 초기화
+        if (currentData.bossData != null)
+        {
+            if (bossEnemy != null) bossEnemy.Init(currentData.bossData);
+            if (bossHealth != null) bossHealth.Init(currentData.bossData);
+        }
+
+        if (bossMovement != null)//보스 이동 경로 
+        {
+            bossMovement.Init(waypointGroup);
+
+        }
 
         if (GameManager.Instance != null && bossHealth != null)
         {
@@ -50,10 +67,22 @@ public class EnemySpawner : MonoBehaviour
         RoundData currentData = GameManager.Instance.currentRoundData;//GameManager가 가진 현재 RoundData SO에서 값을 꺼내옴
 
         if (currentData.enemyPrefab != null && spawnPoint != null)
-        {   //Waypoint 1번 위치에, 회전값 없이 몬스터 생성
+        {   
+            //Waypoint 1번 위치에, 회전값 없이 몬스터 생성
             GameObject enemyObj = Instantiate(currentData.enemyPrefab, spawnPoint.position, Quaternion.identity);
 
-            EnemyHealth enemyHealth = enemyObj.GetComponent<EnemyHealth>();//몬스터의 EnemyHealth 컴포넌트를 가져옴
+            //2. 필요한 컴포넌트들 가져오기
+            Enemy enemy = enemyObj.GetComponent<Enemy>();
+            EnemyHealth enemyHealth = enemyObj.GetComponent<EnemyHealth>();
+            EnemyMovement movement = enemyObj.GetComponent<EnemyMovement>();
+
+            //3. 스포너가 직접 데이터를 넘겨주어 초기화 실행 (Awake나 Start에서 찾지 않도록!)
+            if (currentData.enemyData != null)
+            {
+                if (enemy != null) enemy.Init(currentData.enemyData);
+                if (enemyHealth != null) enemyHealth.Init(currentData.enemyData);
+                if (movement != null) movement.Init(waypointGroup);//몬스터 이동 경로
+            }
 
             //GameManager에게 등록 (이 과정이 있어야 GameManager가 사망을 인지)
             if (GameManager.Instance != null && enemyHealth != null)

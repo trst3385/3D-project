@@ -9,12 +9,12 @@ public class EnemyHealth : MonoBehaviour
     public event System.Action<bool> OnEnemyDie;//(GameManager 등) 몬스터 사망 이벤트 구독
 
     [Header("획득 골드 팝업 설정")]
-    public GameObject goldPopupPrefab;//여기에 인스펙터에서 팝업 프리팹을 넣어주기!
+    public GameObject goldPopupPrefab;//여기에 인스펙터에서 골드 팝업 프리팹을 넣어주기
 
     [Header("체력바 UI 설정")]
-    public GameObject hpBarPrefab;      //인스펙터에서 체력바 프리팹 연결(수동연결)
-    private GameObject spawnedHpBar;    //생성된 체력바 인스턴스
-    private Slider hpSlider;            //생성된 체력바의 슬라이더 컴포넌트
+    public GameObject hpBarPrefab;           //인스펙터에서 체력바 프리팹 연결(수동연결)
+    private GameObject spawnedHpBar;         //생성된 체력바 인스턴스
+    private Slider hpSlider;                 //생성된 체력바의 슬라이더 컴포넌트
     private RectTransform hpBarRectTransform;//위치 조작을 위한 RectTransform
 
     private Enemy enemyStats;//중심 스크립트의 SO 참조
@@ -23,20 +23,13 @@ public class EnemyHealth : MonoBehaviour
     void Awake()
     {
         enemyStats = GetComponent<Enemy>();//중심 스크립트(Enemy) 가져오기
-        if (enemyStats == null)
-        {
-            Debug.LogError($"{gameObject.name}에 Enemy 스크립트가 붙어있지 않아!");
-        }
+        if (enemyStats == null) Debug.LogError($"{gameObject.name}에 Enemy 스크립트가 붙어있지 않아!");
     }
 
-    void Start()
+    public void Init(EnemyData data)//8.10 체력도 외부에서 데이터가 확실히 주입된 뒤에 초기화할 수 있도록 함수 분리
     {
-        if (enemyStats != null && enemyStats.enemyData != null)//SO의 값을 적용
-        {
-            currentHealth = enemyStats.enemyData.MaxHealth;//실행 시 현재 체력의 SO의 최대 체력으로 적용
-        }
-
-        CreateHpBar();//게임 시작 시 메인 캔버스에 체력바 생성 및 연결
+        currentHealth = data.MaxHealth;
+        CreateHpBar(data);
     }
 
     void Update()
@@ -44,7 +37,7 @@ public class EnemyHealth : MonoBehaviour
         UpdateHpBarPosition();//몬스터가 살아있는 동안 매 프레임 머리 위 위치를 쫓아다니도록 갱신
     }
 
-    void CreateHpBar()
+    void CreateHpBar(EnemyData data)
     {
         if (hpBarPrefab != null)
         {
@@ -73,7 +66,7 @@ public class EnemyHealth : MonoBehaviour
     {
         if (spawnedHpBar != null && Camera.main != null)
         {
-            // 몬스터 몸 아래 월드 좌표 (Vector3.up 뒤의 숫자로 높이 조절 가능)
+            //몬스터 몸 아래 월드 좌표 (Vector3.up 뒤의 숫자로 높이 조절 가능)
             Vector3 worldPos = transform.position + Vector3.down * 1.5f;
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 

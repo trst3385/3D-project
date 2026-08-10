@@ -557,6 +557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   spawnPoint: {fileID: 564724358}
+  waypointGroup: {fileID: 1811213966}
 --- !u!4 &125126642
 Transform:
   m_ObjectHideFlags: 0
@@ -4077,11 +4078,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4acc13c8c335ee84a817f4d33a3173a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  activeEnemies: []
   roundDatas:
   - {fileID: 11400000, guid: 5634a33b55aa6644baf8d5085d83b684, type: 2}
   - {fileID: 11400000, guid: 042655883f164814c904aaec909e9392, type: 2}
-  startRoundIndex: 0
   gamegold: {fileID: 11400000, guid: f765d5421a08e7849b6dec738c08fda4, type: 2}
+  startRoundIndex: 0
 --- !u!1 &1811213966
 GameObject:
   m_ObjectHideFlags: 0

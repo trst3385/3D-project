@@ -14,6 +14,8 @@ public class EnemyAttack : MonoBehaviour
 
     void Update()
     {
+        if (enemy == null || enemy.enemyData == null) return;//enemyData가 null이면 아직 스포너에게 데이터를 못 받은 거니까 그냥 리턴
+
         //1. 매 프레임 사거리 내에 가장 가까운 나무 탐색
         TreeHealth nearestTree = GetNearestTree();
 

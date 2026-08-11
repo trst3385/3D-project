@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("몬스터 이동 방향 설정")]
-    public Transform spawnPoint;//Waypoint 1번 위치(지금은 인스펙터 연결로)
+    public Transform spawnPoint;//Waypoint 1번 위치에서 첫 등장(지금은 인스펙터 연결로)
 
     private bool isBossSpawned = false;//보스 몬스터 중복 소환 방지
 

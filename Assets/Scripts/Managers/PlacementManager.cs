@@ -121,7 +121,7 @@ public class PlacementManager : MonoBehaviour
             }
         }
     }
-
+    
     public void SelectTree(int index)//나무 UI버튼에 연결할 함수(OnClick)
     {
         int cost = GameManager.Instance.gamegold.treeCost;//GameManager의 SO에서 비용 가져오기
@@ -146,13 +146,6 @@ public class PlacementManager : MonoBehaviour
         }
         currentPreview = Instantiate(treePrefabs[currentSelectedTreeIndex]);//변수에 미리보기 이미지 오브젝트가 생성
 
-        Collider col = currentPreview.GetComponent<Collider>();//미리보기 이미지는 충돌 처리가 필요 없으니 콜라이더를 끄자
-        if (col != null)
-        {
-            col.enabled = false;    
-        }
-
-
         //==========================================================
         //2.미리보기 나무가 공격하거나 슬로우를 걸지 못하도록 AttackTree, SlowTree 같은 컴포넌트들을 전부 비활성화(Disable) 시키기
         AttackTree attackTreeComponent = currentPreview.GetComponent<AttackTree>();
@@ -164,6 +157,11 @@ public class PlacementManager : MonoBehaviour
         if (slowTreeComponent != null)
         {
             slowTreeComponent.enabled = false;
+        }
+        TreeHealth previewHealth = currentPreview.GetComponent<TreeHealth>();//미리보기 전용이므로 체력 컴포넌트는 파괴(몬스터가 공격 못하게)
+        if (previewHealth != null)
+        {
+            Destroy(previewHealth);
         }
         //==========================================================
 

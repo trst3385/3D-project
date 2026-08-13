@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28a70c9cf4412e8499834787ae938597, type: 3}
   m_Name: GameGold Data
   m_EditorClassIdentifier: Assembly-CSharp::GameGold
-  startGold: 50
+  startGold: 80
   treeCost: 25

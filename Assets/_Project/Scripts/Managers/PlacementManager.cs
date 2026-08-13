@@ -69,6 +69,13 @@ public class PlacementManager : MonoBehaviour
 
     private void TryPlantTree()
     {
+        //게임 시작 전(대기 시간)에는 아예 나무 선택 및 미리보기 생성을 차단
+        if (Time.timeScale == 0f)
+        {
+            Debug.Log("아직 게임 시작 전이라 나무를 선택할 수 없어!");
+            return;
+        }
+
         //UI 클릭 방어: UI를 클릭했을 때는 게임 월드 레이캐스트가 작동하지 않게 함 (클릭 관통 현상 방지)
         if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
@@ -124,6 +131,8 @@ public class PlacementManager : MonoBehaviour
     
     public void SelectTree(int index)//나무 UI버튼에 연결할 함수(OnClick)
     {
+        if (Time.timeScale == 0f) return;//게임 시작 전(대기 시간)에는 나무 선택 및 미리보기 생성을 차단
+
         int cost = GameManager.Instance.gamegold.treeCost;//GameManager의 SO에서 비용 가져오기
 
         if (GameManager.Instance.CurrentGold < cost)//만약 골드가 부족하면 미리보기 생성 및 선택 진입을 차단!

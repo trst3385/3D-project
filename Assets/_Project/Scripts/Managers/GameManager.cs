@@ -1,6 +1,8 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트는 부모 오브젝트가 파괴될 때 씬에서 강제로 튕겨 나와(Root로 이동)
 {
@@ -19,17 +21,20 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
     [Header("라운드 설정")]
     public List<RoundData> roundDatas;//여러 라운드 데이터를 미리 SO로 만들어두고 리스트에 담기
 
-
     //----게임 골드----
     [Header("게임 설정 데이터")]
     public GameGold gamegold;//인스펙터에서 GameGold에셋(SO)을 꽂아줄 변수
     [Header("골드 시스템")]
-    public int CurrentGold { get; private set; } // 외부에서 읽을 수만 있게 보호
+    public int CurrentGold { get; private set; }//외부에서 읽을 수만 있게 보호
     //-----------------
 
+    [Header("게임 시작 연출 UI(UI자동연결)")]
+    [SerializeField] private TextMeshProUGUI readyText;   //UI 텍스트(ReadyText) 연결(자동연결)
+    [SerializeField] private float gameReadyDelay = 3.0f; //시작 전 대기시간. 3초 카운트다운
 
     [SerializeField] private int startRoundIndex = 0;//숫자를 바꿔 실행 시 웨이브 순서 설정(0부터 1웨이브 시작)
     private int defeatedEnemyCount = 0;//처치한 몬스터 수
+
 
     //------------이벤트------------------------------
     public event Action<int, int> OnEnemyCountChanged;//UI한테 "몬스터 처치해서 카운트 올릴게!"라고 알려주는 이벤트
@@ -65,12 +70,59 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
         {
             CurrentGold = gamegold.startGold;
         }
-        else
+        else Debug.LogWarning("GameGold SO가 GameManager에 연결되지 않았어!");
+
+        //ReadyText 자동 연결
+        GameObject textObj = GameObject.Find("ReadyText");
+        if (textObj != null)
         {
-            CurrentGold = 50;//혹시 몰라 예외 처리
-            Debug.LogWarning("GameGold SO가 GameManager에 연결되지 않았어!");
+            readyText = textObj.GetComponent<TextMeshProUGUI>();
+            readyText.gameObject.SetActive(false);//시작하자마자 일단 숨겨두기
+        }
+        else Debug.LogError("ReadyText를 찾을 수 없어! 이름을 확인해봐.");
+    }
+
+    void Start()
+    {
+        StartCoroutine(GameReadyRoutine());//시작 전 대기시간
+    }
+    IEnumerator GameReadyRoutine()
+    {
+        Time.timeScale = 0f;//게임 시작하자마자 시간 정지 (씬 전체 멈춤)
+        float timer = gameReadyDelay;//카운트다운 동안 텍스트를 띄우며 1초씩 대기 (현실 시간 기준)
+
+        while (timer > 0f)
+        {
+            //텍스트에 남은 시간 표시 (소수점 올림해서 3, 2, 1로 보이게)
+            int displayNum = Mathf.CeilToInt(timer);
+            if (readyText != null)
+            {
+                readyText.text = displayNum.ToString();
+                readyText.gameObject.SetActive(true);
+            }
+
+            //1초 대기 (timeScale = 0이어도 멈추지 않게 Realtime 사용)
+            yield return new WaitForSecondsRealtime(1f);//현실 시간 기준 1초 대기 (일시정지 중에도 작동)
+            timer -= 1f;
+        }
+
+        if (readyText != null)//카운트 끝난 후 "START!" 같은 문구를 잠깐 보여주고 싶다면?
+        {
+            readyText.text = "START!";
+            yield return new WaitForSecondsRealtime(1f);//1초 동안 START 표시
+            readyText.gameObject.SetActive(false);//텍스트 숨기기
+        }
+
+        //대기 시간이 끝나면 시간 다시 흐르게 복구
+        Time.timeScale = 1f;
+        Debug.Log("게임 시작!");
+
+        if (roundDatas != null && roundDatas.Count > 0)//첫 라운드 시작 알림
+        {
+            OnRoundChanged?.Invoke(currentRoundData);
         }
     }
+
 
     public void AddEnemy(Enemy enemy)//적 리스트에 등록
     {
@@ -96,10 +148,7 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
             {
                 OnGameClear?.Invoke();//보스면 바로 클리어!
             }
-            else
-            {
-                EnemyDefeated();//일반 몬스터면 카운트 증가
-            }
+            else EnemyDefeated();//일반 몬스터면 카운트 증가
         };  
     }
 

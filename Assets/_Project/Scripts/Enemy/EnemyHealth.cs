@@ -68,6 +68,8 @@ public class EnemyHealth : MonoBehaviour
         {
             //몬스터 몸 아래 월드 좌표 (Vector3.up 뒤의 숫자로 높이 조절 가능)
             Vector3 worldPos = transform.position + Vector3.down * 1.5f;
+
+            //3D 월드 좌표를 모니터 화면(Screen) 기준의 2D 픽셀 좌표로 변환 (몬스터를 따라다니게 하기 위함)
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 
             if (screenPos.z < 0)//카메라 뒤로 갔을 때 UI가 이상하게 튀는 현상 방지

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;//씬 이동을 위해 선언
 
 public class PauseManager : MonoBehaviour
 {
@@ -8,7 +9,6 @@ public class PauseManager : MonoBehaviour
 
     [Header("연결된 UI (자동연결)")]
     public GameObject pausePanel;//일시정지 창 패널
-    public Button pauseButton;   //씬에 있을 일시정지 버튼
 
     void Awake()
     {
@@ -16,10 +16,7 @@ public class PauseManager : MonoBehaviour
         {
             Instance = this;
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        else Destroy(gameObject);
     }
 
 
@@ -31,7 +28,7 @@ public class PauseManager : MonoBehaviour
         {
             if (canvas.gameObject.scene.name != null)//씬에 포함된 녀석들만 골라내기 (프리팹 제외)
             {
-                Transform found = canvas.transform.Find("PausePanel");//자식 중에 PausePanel이 있는지 확인
+                Transform found = canvas.transform.Find("PausePanel");//자식 중에 PausePanel 이름이 있는지 확인
                 if (found != null)
                 {
                     pausePanel = found.gameObject;
@@ -61,5 +58,20 @@ public class PauseManager : MonoBehaviour
         bool isPaused = !pausePanel.activeSelf;//현재 패널 상태의 반대값을 구함 (켜져 있으면 false, 꺼져 있으면 true)
         pausePanel.SetActive(isPaused);//버튼 클릭, esc 누르면 켜거나 끔 (토글)
         Time.timeScale = isPaused ? 0f : 1f;//일시정지 중이면 시간을 멈추고0, 아니면 정상 흐름1 으로 복구
+    }
+
+    public void ToMainScene()//메인 씬으로 이동
+    {
+        Time.timeScale = 1f;//씬 넘어가기 전에 반드시 시간 흐름을 1로 복구해야 해
+        SceneManager.LoadScene("MainScene");//메인 씬 이름
+    }
+
+    public void QuitGame()//게임종료
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;//에디터에서 플레이 중일 때 멈춤
+        #else
+        Application.Quit();//빌드된 실제 게임에서 종료
+        #endif
     }
 }

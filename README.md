@@ -89,6 +89,15 @@
 
 ##  주요 문제 해결 과정 & 배운 점
 
+<details>
+<summary><b>UI 씬 이동 구조 리팩토링: 하드코딩된 씬 전환 방식에서 매개변수 기반 유연한 설계로의 전환</b></summary>
+<br/>
+
+
+
+
+</details>
+
 
 <details>
 <summary><b>불필요한 물리 연산 제거 및 순수 수학적 거리 계산(sqrMagnitude)을 통한 사거리 탐색 최적화</b></summary>

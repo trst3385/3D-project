@@ -54,7 +54,7 @@
 </details>
 
 <details>
-<summary><b>v0.3.0 (2026.08.19) - 최신 주요 업데이트</b></summary>
+<summary><b>v0.3.0 (2026.08.19)</b></summary>
 <br/>
 
 - **메인 화면 씬 추가 및 확장성 고려한 씬 전환 로직**:

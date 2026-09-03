@@ -43,6 +43,17 @@
 ## Build History
 
 <details open>
+<summary><b>v0.4.0 (2026.09.1) - 최신 주요 업데이트</b></summary>
+<br/>
+
+- **메인 화면 복귀 및 게임 종료 네비게이션 구현**:
+  * 일시정지 메뉴 내 버튼을 통한 메인 화면 씬(Scene) 이동 및 게임 종료(Application.Quit) 기능 추가로 플레이어 조작 흐름 완성
+  * 빌드 및 에디터 환경을 고려한 게임씬에서도 게임 종료(Application.Quit) 기능 추가
+- **GitHub Releases를 통한 v0.4.0 정식 빌드 .zip 배포 및 Notion 포트폴리오 다운로드 링크 연동 완료**
+  
+</details>
+
+<details>
 <summary><b>v0.3.0 (2026.08.19) - 최신 주요 업데이트</b></summary>
 <br/>
 

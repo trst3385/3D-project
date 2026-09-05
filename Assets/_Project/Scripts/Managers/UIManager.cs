@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance;//싱글톤 선언
+
+    [Header("PauseWarningText 연결. 자동연결")]
+    public TextMeshProUGUI PauseWarningText;//일시정지 불가 등 시스템 경고 텍스트
+    private Coroutine warningMessageCoroutine;//일시정지 창 만의 중복 실행 방지용 코루틴 변수
 
     [Header("WaveText연결. 자동연결")]
     public TextMeshProUGUI WaveText;//현재/최대 처치 수 텍스트
@@ -17,6 +22,21 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI GoldWarningText;//골드 부족 시 뜰 텍스트
 
     private Coroutine warningCoroutine;//중복 실행 방지용 코루틴 변수
+
+
+    void Awake()
+    {
+        //싱글톤 초기화
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     void Start()
     {
@@ -54,6 +74,28 @@ public class UIManager : MonoBehaviour
         {
             GameManager.Instance.OnEnemyCountChanged -= UpdateUI;
         }
+    }
+
+    //외부(PauseManager 등)에서 호출할 수 있는 공용 메서드
+    public void ShowPauseWarning()
+    {
+        if (PauseWarningText != null)
+        {
+            PauseWarningText.text = "카운트다운 중에는 일시정지할 수 없습니다.";
+
+            if (warningMessageCoroutine != null)
+            {
+                StopCoroutine(warningMessageCoroutine);
+            }
+            warningMessageCoroutine = StartCoroutine(ShowPauseWarningRoutine());
+        }
+    }
+    private IEnumerator ShowPauseWarningRoutine()
+    {
+        PauseWarningText.gameObject.SetActive(true);
+        yield return new WaitForSecondsRealtime(1.5f);//일시정지(timeScale=0) 중에도 텍스트는 작동해야 하므로 Realtime 사용
+        PauseWarningText.gameObject.SetActive(false);
+        warningMessageCoroutine = null;
     }
 
     private void HandleGoldShortage()//신호가 도착했을 때 실행될 메서드
@@ -97,6 +139,13 @@ public class UIManager : MonoBehaviour
 
     void FindUI()//UI 자동으로 찾기
     {
+        //PauseWarningText 자동 찾기
+        GameObject PauseWarningTextObj = GameObject.Find("PauseWarningText");
+        if (PauseWarningTextObj != null) PauseWarningText = PauseWarningTextObj.GetComponent<TextMeshProUGUI>();
+        else Debug.LogWarning("PauseWarningText를 찾을 수 없어!");
+
+        if (PauseWarningText != null) PauseWarningText.gameObject.SetActive(false);//시작할 때는 숨기기
+
         //WaveText 자동 찾기
         GameObject waveObj = GameObject.Find("WaveText");
         if (waveObj != null) WaveText = waveObj.GetComponent<TextMeshProUGUI>();

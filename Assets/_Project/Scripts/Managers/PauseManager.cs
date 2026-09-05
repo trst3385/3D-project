@@ -55,6 +55,16 @@ public class PauseManager : MonoBehaviour
             return;
         }
 
+        //게임 준비(카운트다운) 중이라면 일시정지 창을 띄우지 않고 UIManager를 통해 안내 메시지 출력!
+        if (GameManager.Instance != null && GameManager.Instance.IsGameReady)
+        {
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowPauseWarning();//텍스트 출력은 UIManager가 담당
+            }
+            return;
+        }
+
         bool isPaused = !pausePanel.activeSelf;//현재 패널 상태의 반대값을 구함 (켜져 있으면 false, 꺼져 있으면 true)
         pausePanel.SetActive(isPaused);//버튼 클릭, esc 누르면 켜거나 끔 (토글)
         Time.timeScale = isPaused ? 0f : 1f;//일시정지 중이면 시간을 멈추고0, 아니면 정상 흐름1 으로 복구

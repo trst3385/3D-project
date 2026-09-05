@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
 {
     public static GameManager Instance;//싱글톤
 
+    //9.5외부에서 읽을 수만 있는 카운트다운 진행 여부 플래그(카운트다운 중 일시정지창 못켜게 막기)
+    public bool IsGameReady { get; private set; } = false;
 
     //외부에서 현재 라운드 번호를 '읽을 수는 있지만', 함부로 값을 바꿀 수 없도록(private set) 보호하고 인스펙터 창에서 숨김
     public int CurrentRoundIndex { get; private set; }
@@ -88,6 +90,7 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
     }
     IEnumerator GameReadyRoutine()
     {
+        IsGameReady = true;//카운트다운 시작 (일시정지창은 카운트 종료까지 작동 불가 상태)
         Time.timeScale = 0f;//게임 시작하자마자 시간 정지 (씬 전체 멈춤)
         float timer = gameReadyDelay;//카운트다운 동안 텍스트를 띄우며 1초씩 대기 (현실 시간 기준)
 
@@ -115,6 +118,7 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
 
         //대기 시간이 끝나면 시간 다시 흐르게 복구
         Time.timeScale = 1f;
+        IsGameReady = false;//카운트다운 종료 (이제 일시정지창 생성 가능)
         Debug.Log("게임 시작!");
 
         if (roundDatas != null && roundDatas.Count > 0)//첫 라운드 시작 알림

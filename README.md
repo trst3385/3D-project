@@ -168,7 +168,10 @@ private IEnumerator ShowPauseWarningRoutine()
 }
 ```
 
+### 🎬 구현 결과 (Execution Result)
+
 ![PauseCount Warning](./Images/PauseCount.gif)
+
 
 ### 💡 인사이트 및 트레이드오프 (Insights & Trade-off)
 

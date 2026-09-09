@@ -170,9 +170,9 @@ private IEnumerator ShowPauseWarningRoutine()
 
 ### 💡 인사이트 및 트레이드오프 (Insights & Trade-off)
 
-- 1. 단일 책임 원칙(SRP)과 책임 분리의 실천: UI 텍스트 출력과 타이머 제어 책임을 UIManager스크립트로 명확히 몰아줌으로써, PauseManager스크립트는 오직 '일시정지 상태 제어'라는 본연의 역할에만 집중할 수 있는 깔끔한 구조를 완성했습니다.
-- 2. 타임스케일(Time.timeScale) 예외를 고려한 UX 설계: Time.timeScale = 0 환경에서 일반 WaitForSeconds를 쓰면 코루틴이 멈춰버리는 유니티 엔진의 특성을 이해하고, WaitForSecondsRealtime을 활용해 예외 상황에서도 유저에게 정확한 피드백(1.5초 노출)을 제공하는 디테일을 챙겼습니다.
-- 3. 싱글톤 구조에서의 안전한 데이터 캡슐화: private set을 활용해 전역 데이터 허브인 GameManager스크립트의 상태 변수가 외부에서 무분별하게 변조되는 위험을 차단하고, 읽기 전용으로 안전하게 노출하는 설계 방식을 다졌습니다.
+- 1\. 단일 책임 원칙(SRP)과 책임 분리의 실천: UI 텍스트 출력과 타이머 제어 책임을 UIManager스크립트로 명확히 몰아줌으로써, PauseManager스크립트는 오직 '일시정지 상태 제어'라는 본연의 역할에만 집중할 수 있는 깔끔한 구조를 완성했습니다.
+- 2\. 타임스케일(Time.timeScale) 예외를 고려한 UX 설계: Time.timeScale = 0 환경에서 일반 WaitForSeconds를 쓰면 코루틴이 멈춰버리는 유니티 엔진의 특성을 이해하고, WaitForSecondsRealtime을 활용해 예외 상황에서도 유저에게 정확한 피드백(1.5초 노출)을 제공하는 디테일을 챙겼습니다.
+- 3\. 싱글톤 구조에서의 안전한 데이터 캡슐화: private set을 활용해 전역 데이터 허브인 GameManager스크립트의 상태 변수가 외부에서 무분별하게 변조되는 위험을 차단하고, 읽기 전용으로 안전하게 노출하는 설계 방식을 다졌습니다.
 
 
 </details>

@@ -101,6 +101,89 @@
 ##  주요 문제 해결 과정 & 인사이트
 
 <details>
+<summary><b>UI 게임 시작 전 카운트다운 중 일시정지 예외 처리 및 UIManager.cs 책임 분리 (SRP)</b></summary>
+<br/>
+
+### 🚨 문제 상황 (Problem)
+
+- 게임 시작 전 3초간의 카운트다운(준비 상태) 중에 플레이어가 ESC 키를 누르면, 일시정지 창은 정상적으로 활성화되지만 게임 속도(Time.timeScale)가 동기화되지 않아 카운트다운이나 게임 로직이 계속 흘러버리는 연출 및 시간 동기화 꼬임 현상이 발생했었습니다.
+- 초기에는 단순히 PauseManager스크립트 내에서 입력 조건만 막으려고 했으나, 관련 경고 메시지 UI를 띄우는 책임을 어디에 두어야 할지 설계적 혼선이 있었습니다.
+
+### 🔍 원인 분석 및 접근 (Insight)
+
+- 상태 관리 부재: 준비 상태(IsGameReady)에 대한 명확한 예외 처리 플래그가 존재하지 않았고, PauseManager.cs가 무조건 Time.timeScale을 반전시키는 단편적인 로직만 가지고 있었습니다.
+- 관심사 분리(SRP) 위반 위험:
+  * 수정 초기에는 PauseManager스크립트 내에서 UI 요소를 다루는 것이 구현상 더 직관적이고 편할 것이라 생각했습니다.
+  * 하지만 'UI 화면의 시각적 요소와 문구 관리 책임'은 일시정지 로직을 처리하는 곳이 아니라, 화면 레이아웃과 UI를 전담하는 UIManager.cs가 가져야 한다는 단일 책임 원칙(SRP)의 관점을 인지했습니다.
+  * 이에 따라 PauseManager스크립트는 구체적인 문자열이나 UI 제어에 직접 관여하지 않고, 오직 "경고를 띄워줘!" 라는 명령(메서드 호출)만 UIManager스크립트에게 전달하도록 책임을 명확히 분리하여 결합도를 낮추고 응집도를 높였습니다.
+- 실용적 아키텍처 타협: 매니저 스크립트 간 싱글톤 참조를 활용하는 현재 구조상 완전한 느슨한 결합은 아니지만, 무조건적인 '강한 결합 절대 배제'라는 강박에 빠지기보다는 현재 프로젝트 규모와 상황에서 최선의 선택이 무엇인지 판단하고 그 장단점을 명확히 인지하는 데 집중했습니다.
+
+### 🛠 해결 과정 (Solution)
+
+- 1\. 상태 관리 도입 (GameManager.cs): 게임의 중심이 되는 GameManager스크립트에 IsGameReady 플래그 변수를 추가하여 현재 카운트다운(준비 상태) 진행 중인지 여부를 외부에서 안전하게 읽을 수 있도록(private set) 노출했습니다.
+```
+//GameManager.cs 외부에서 읽을 수만 있는 카운트다운 진행 여부 플래그
+public bool IsGameReady { get; private set; } = false;
+
+//게임 시작 시 코루틴을 통해 카운트다운 동안 true로 유지 후 종료 시 false로 전환
+//Time.timeScale = 0f 상태에서도 실시간으로 카운트 진행
+```
+- 2\. 입력 예외 처리 (PauseManager.cs): ESC 입력 시 작동하는 TogglePause() 함수에 GameManager.Instance.IsGameReady 검증 로직을 추가하여, 카운트다운 중일 때는 일시정지 창이 아예 켜지지 않도록 원천 차단했습니다.
+```
+public void TogglePause()
+{
+    //게임 준비(카운트다운) 중에는 일시정지 진입 차단 및 경고 텍스트 출력 요청
+    if (GameManager.Instance != null && GameManager.Instance.IsGameReady)
+    {
+        UIManager.Instance.ShowPauseWarning();
+        return;
+    }
+    //기존 일시정지 토글 로직...
+}
+```
+
+- 3\. UX 개선 및 안내 텍스트 도입 (UIManager.cs):
+  * 게임이 멈춘(Time.timeScale = 0f) 상태에서도 텍스트 타이머가 정상 작동하도록 WaitForSecondsRealtime을 적용하고, 연속 입력 시 타이머가 꼬이지 않도록 코루틴 중복 실행 방지 로직을 구현했습니다.
+  * 또한 시스템 전반의 알림 책임을 원활히 수행할 수 있도록 UIManager스크립트에도 싱글톤 패턴을 적용하여 전역 접근성을 확보했습니다.
+```
+public void ShowPauseWarning()//외부(PauseManager 등)에서 호출할 수 있는 공용 메서드
+{
+    if (PauseWarningText != null)
+    {
+        PauseWarningText.text = "카운트다운 중에는 일시정지할 수 없습니다.";
+
+        if (warningMessageCoroutine != null)
+        {
+            StopCoroutine(warningMessageCoroutine);
+        }
+        warningMessageCoroutine = StartCoroutine(ShowPauseWarningRoutine());
+    }
+}
+private IEnumerator ShowPauseWarningRoutine()
+{
+    PauseWarningText.gameObject.SetActive(true);
+    yield return new WaitForSecondsRealtime(1.5f);//일시정지 중에도 작동하도록 Realtime 사용
+    PauseWarningText.gameObject.SetActive(false);
+    warningMessageCoroutine = null;
+}
+```
+
+### 🎬 구현 결과 (Execution Result)
+
+![PauseCount Warning](./Images/PauseCount.gif)
+
+
+### 💡 인사이트 및 트레이드오프 (Insights & Trade-off)
+
+- 1\. 단일 책임 원칙(SRP)과 책임 분리의 실천: UI 텍스트 출력과 타이머 제어 책임을 UIManager스크립트로 명확히 몰아줌으로써, PauseManager스크립트는 오직 '일시정지 상태 제어'라는 본연의 역할에만 집중할 수 있는 깔끔한 구조를 완성했습니다.
+- 2\. 타임스케일(Time.timeScale) 예외를 고려한 UX 설계: Time.timeScale = 0 환경에서 일반 WaitForSeconds를 쓰면 코루틴이 멈춰버리는 유니티 엔진의 특성을 이해하고, WaitForSecondsRealtime을 활용해 예외 상황에서도 유저에게 정확한 피드백(1.5초 노출)을 제공하는 디테일을 챙겼습니다.
+- 3\. 싱글톤 구조에서의 안전한 데이터 캡슐화: private set을 활용해 전역 데이터 허브인 GameManager스크립트의 상태 변수가 외부에서 무분별하게 변조되는 위험을 차단하고, 읽기 전용으로 안전하게 노출하는 설계 방식을 다졌습니다.
+
+
+</details>
+
+ 
+<details>
 <summary><b>UI 씬 이동 구조 리팩토링: 하드코딩된 씬 전환 방식에서 매개변수 기반 유연한 설계로의 전환</b></summary>
 <br/>
 
@@ -351,7 +434,6 @@ private void SpawnEnemy()
     }
 }
 ```
-
 
 
 ### 💡 인사이트 및 트레이드오프 (Insights & Trade-off)

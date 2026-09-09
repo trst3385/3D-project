@@ -168,6 +168,8 @@ private IEnumerator ShowPauseWarningRoutine()
 }
 ```
 
+![PauseCount Warning](./Images/PauseCount.gif)
+
 ### 💡 인사이트 및 트레이드오프 (Insights & Trade-off)
 
 - 1\. 단일 책임 원칙(SRP)과 책임 분리의 실천: UI 텍스트 출력과 타이머 제어 책임을 UIManager스크립트로 명확히 몰아줌으로써, PauseManager스크립트는 오직 '일시정지 상태 제어'라는 본연의 역할에만 집중할 수 있는 깔끔한 구조를 완성했습니다.

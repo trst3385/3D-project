@@ -43,7 +43,20 @@
 ## Build History
 
 <details open>
-<summary><b>v0.4.0 (2026.09.1) - 최신 주요 업데이트</b></summary>
+<summary><b>v0.4.1 (2026.09.9) - 최신 주요 업데이트</b></summary>
+<br/>
+
+- **게임 시작 전 카운트다운 중 일시정지 예외 처리 및 UI 책임 분리**:
+  * 게임 시작 전 3초 카운트다운(준비 상태) 중에 ESC 키 입력 시 일시정지 창이 열리며 시간 동기화가 꼬이던 버그 해결
+  * GameManager에 IsGameReady 플래그 상태 변수를 추가하여 카운트다운 중 일시정지 진입을 원천 차단
+  * 일시정지 관련 스크립트가 직접 UI를 제어하던 구조에서 벗어나, UI 텍스트 출력 및 타이머 관리를 전담하는 UIManager로 책임을 위임하여 단일 책임 원칙(SRP) 준수 및 결합도 감소
+  * Time.timeScale = 0f 환경에서도 1.5초간 경고 텍스트가 정상 노출되도록 WaitForSecondsRealtime 코루틴 적용 및 중복 실행 방지 로직 구현
+- **GitHub Releases를 통한 v0.4.1 정식 빌드 .zip 배포 및 Notion 포트폴리오 다운로드 링크 연동 완료**
+  
+</details>
+
+<details>
+<summary><b>v0.4.0 (2026.09.1)</b></summary>
 <br/>
 
 - **메인 화면 복귀 및 게임 종료 네비게이션 구현**:

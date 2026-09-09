@@ -120,7 +120,7 @@
 
 ### 🛠 해결 과정 (Solution)
 
-- 1. 상태 관리 도입 (GameManager.cs): 게임의 중심이 되는 GameManager스크립트에 IsGameReady 플래그 변수를 추가하여 현재 카운트다운(준비 상태) 진행 중인지 여부를 외부에서 안전하게 읽을 수 있도록(private set) 노출했습니다.
+- 1\. 상태 관리 도입 (GameManager.cs): 게임의 중심이 되는 GameManager스크립트에 IsGameReady 플래그 변수를 추가하여 현재 카운트다운(준비 상태) 진행 중인지 여부를 외부에서 안전하게 읽을 수 있도록(private set) 노출했습니다.
 ```
 //GameManager.cs 외부에서 읽을 수만 있는 카운트다운 진행 여부 플래그
 public bool IsGameReady { get; private set; } = false;
@@ -128,7 +128,7 @@ public bool IsGameReady { get; private set; } = false;
 //게임 시작 시 코루틴을 통해 카운트다운 동안 true로 유지 후 종료 시 false로 전환
 //Time.timeScale = 0f 상태에서도 실시간으로 카운트 진행
 ```
-- 2. 입력 예외 처리 (PauseManager.cs): ESC 입력 시 작동하는 TogglePause() 함수에 GameManager.Instance.IsGameReady 검증 로직을 추가하여, 카운트다운 중일 때는 일시정지 창이 아예 켜지지 않도록 원천 차단했습니다.
+- 2\. 입력 예외 처리 (PauseManager.cs): ESC 입력 시 작동하는 TogglePause() 함수에 GameManager.Instance.IsGameReady 검증 로직을 추가하여, 카운트다운 중일 때는 일시정지 창이 아예 켜지지 않도록 원천 차단했습니다.
 ```
 public void TogglePause()
 {
@@ -142,7 +142,7 @@ public void TogglePause()
 }
 ```
 
-- 3. UX 개선 및 안내 텍스트 도입 (UIManager.cs):
+- 3\. UX 개선 및 안내 텍스트 도입 (UIManager.cs):
   * 게임이 멈춘(Time.timeScale = 0f) 상태에서도 텍스트 타이머가 정상 작동하도록 WaitForSecondsRealtime을 적용하고, 연속 입력 시 타이머가 꼬이지 않도록 코루틴 중복 실행 방지 로직을 구현했습니다.
   * 또한 시스템 전반의 알림 책임을 원활히 수행할 수 있도록 UIManager스크립트에도 싱글톤 패턴을 적용하여 전역 접근성을 확보했습니다.
 ```

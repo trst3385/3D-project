@@ -70,10 +70,25 @@ public class UIManager : MonoBehaviour
 
     void OnDestroy()
     {
-        if (GameManager.Instance != null)//구독 해제 (이거 안 하면 나중에 버그 발생)
+        //등록한 모든 이벤트의 구독 해제 짝 맞추기 (메모리 누수 방지), 이거 안 하면 나중에 버그 발생!
+        if (GameManager.Instance != null)
         {
             GameManager.Instance.OnEnemyCountChanged -= UpdateUI;
+            GameManager.Instance.OnRoundChanged -= HandleRoundChanged;
+            //[구독 해제 명령] 컴퓨터한테 "HandleRoundChanged라는 이름표를 가진 구독을 끊어줘"라고 명령하는 곳
         }
+
+        if (PlacementManager.Instance != null)
+        {
+            PlacementManager.Instance.OnGoldShortage -= HandleGoldShortage;
+        }
+    }
+    private void HandleRoundChanged(RoundData newData)//9.10 람다식을 대체하기 위해 OnRoundChanged를 위해 추가된 일반 메서드
+    {   //HandleRoundChanged() 만든 이유?: 기존에 쓰던 UpdateUI()와 데이터 형태가 안 맞아서 중간에서 데이터를 바꿔줄 메서드가 필요한데,
+        //그 메서드에'이름표'를 붙여줘야 메모리 누수를 방지하고 안전하게 해제할 수 있기 때문이야
+        UpdateUI(0, newData.enemyCount);//람다식(이름 없는 일회용 함수)을 쓰면 해제할 때 주소가 달라져서 버그가 생기므로,
+                                        //이렇게 고유한 이름을 가진 일반 메서드로 만들어야 컴퓨터가 정확히 찾아서 구독을 끊을 수 있음
+        //OnRoundChanged는 각 라운드 SO의 enemyCount(목표 처치 수)를 알려주는 역할
     }
 
     //외부(PauseManager 등)에서 호출할 수 있는 공용 메서드

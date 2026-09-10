@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
 {
     public static GameManager Instance;//싱글톤
 
+
     //9.5외부에서 읽을 수만 있는 카운트다운 진행 여부 플래그(카운트다운 중 일시정지창 못켜게 막기)
     public bool IsGameReady { get; private set; } = false;
 
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
     public int CurrentRoundIndex { get; private set; }
     //외부에서 현재 라운드 데이터(SO)를 '읽을 수는 있지만', 함부로 교체할 수 없도록 보호하고 인스펙터 창에서 숨김
     public RoundData currentRoundData { get; private set; }//이 스크립트에서만 SO연결, 다른 매니저 스크립트에서 GameManager에 연결된 SO 값을 받아옴
+
 
 
     public List<Enemy> activeEnemies = new List<Enemy>();//현재 살아있는 적들

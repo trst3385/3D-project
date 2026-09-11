@@ -46,9 +46,8 @@ public class UIManager : MonoBehaviour
         UpdateUI(0, GameManager.Instance.currentRoundData.enemyCount);//GameManager의 SO 데이터의 enemyCount를 가져와서 실행할 때 초기값 전달
 
         //라운드가 바뀌면 WaveText UI도 새 데이터에 맞게 초기화
-        GameManager.Instance.OnRoundChanged += (newData) => {UpdateUI(0, newData.enemyCount);};
+        GameManager.Instance.OnRoundChanged += HandleRoundChanged;
 
-        
         //PlacementManager의 '골드 부족 신호'를 구독!
         if (PlacementManager.Instance != null)
         {

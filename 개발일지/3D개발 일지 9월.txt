@@ -259,6 +259,33 @@ ItemBullet 스크립트 추가로 오브젝트 풀링(Object Pooling) 개념을 
 
 
 
+9/16
+특수 스킬(SniperSkill) 오브젝트 풀링 및 매니저 연동 (ItemBullet->SniperSkill 이름 변경)
+
+- 화면 전체에 조준 타격을 가하는 특수 스킬 시스템에 오브젝트 풀링 구조(Object Pooling)를 적용하고 UI 버튼과 연동하기.
+
+- SniperSkill 스크립트 작성 및 리팩토링.
+   1. 물리적 총알 모델이 불필요한 기획 의도에 맞춰(뭔가를 발사하지 않고 몬스터 클릭하면 즉시 타격), 스크립트 및 클래스명을 ItemBullet에서 SniperSkill로 변경하여 상태 및 생명주기 관리용 컨트롤러로 변경.
+   2. Init() 함수를 통해 풀 반환 콜백(Action<SniperSkill>), 최대 탄수(maxAmmo), 제한 시간(lifeTime) 초기화 로직 구현
+   3. Update() 내에서 마우스 왼쪽 클릭 감지 시 TryShootEnemy()를 호출하여 Raycast 및 EnemyHealth.TakeDamage() 연동 완료
+- SniperSkillPoolManager 스크립트 작성.
+   1. 싱글톤 패턴 적용 및 Queue<SniperSkill> 기반의 오브젝트 풀 매니저 구현
+   2. 게임 시작 시 InitializePool()을 통해 지정된 갯수(poolSize = 1)만큼 미리 생성 후 비활성화 대기 (현재 실행 시 한번만 사용 가능)
+   3. 외부 UI 버튼에서 호출할 UseSkill() 및 풀 반환 처리 메서드(ReturnToPool) 구현
+   4. 에디터 연동 및 테스트
+      4-1. SniperSkill 스크립트가 붙은 오브젝트를 프리팹화하여 매니저 인스펙터에 연결
+      4-2. UI 버튼의 OnClick() 이벤트에 SniperSkillPoolManager.UseSkill()을 바인딩하여 정상 작동 확인
+- 주요 인사이트 & 개념 정리.
+   1. poolSize vs maxAmmo의 역할 분리:
+      1-1. SniperSkillPoolManager스크립트의 poolSize: 창고에 미리 만들어 두고 동시에 재사용할 수 있는 총 오브젝트 개수 (이 게임에서 몇번 사용할 수 있냐)
+      1-2. SniperSkill스크립트의 maxAmmo: 스킬이 발동된 후 한 번의 세션(탄창) 안에서 쏠 수 있는 최대 탄환수 (스킬을 사용하면 발사되는 총알 갯수)
+   2. 시각적인 물리 투사체가 없더라도, 스킬의 '활성화 상태', '유지 시간', '탄수 관리'를 위해 컨트롤러 객체와 오브젝트 풀링 구조가 왜 필요한지 이해
+
+
+**오브젝트 풀링에 대해 자세히 알아보자. 오늘은 스크립트 작성만 했지, 이 기능을 제대로 이해하지 못하고 있어, 큐(Queue/선입선출)도 알아야 하고**
+**실행만 되게 했지 아직 남은 '플레이어가 남은 탄수(currentAmmo)와 잔여 시간(lifeTime)을 시각적으로 확인할 수 있는 UI 텍스트/슬라이더 연동 작업' 끝내도록 하자**
+
+
 ***To-Do List***
 //-----외부에서 들었던 포폴, 취업 조언------
 **포폴 적을때 핵심 키워드 글자를 ` ` 만 쓰지말고 색을 바꾼다던가 밑줄 치기**

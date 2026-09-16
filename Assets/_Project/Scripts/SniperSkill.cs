@@ -1,17 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ItemBullet : MonoBehaviour
+public class SniperSkill : MonoBehaviour
 {
-    [SerializeField] private float lifeTime = 5f; //조준 모드 유지 시간 (시간 지나면 자동 종료)
-    [SerializeField] private int damage = 50;     //스킬 데미지
-    [SerializeField] private int maxAmmo = 5;     //총 발사 가능한 횟수 (예: 5발)
-    private int currentAmmo;                      //현재 남은 탄수
+    [SerializeField] private float lifeTime = 5f;//조준 모드 유지 시간 (시간 지나면 자동 종료)
+    [SerializeField] private int damage = 50;    //스킬 데미지
+    [SerializeField] private int maxAmmo = 5;    //총 발사 가능한 횟수 (예: 5발)
+    private int currentAmmo;                     //현재 남은 탄수
 
-    private System.Action<ItemBullet> onReturnToPool;
+    private System.Action<SniperSkill> onReturnToPool;
     private bool isAiming = false;//현재 조준 모드 활성화 여부
 
-    public void Init(System.Action<ItemBullet> returnAction)
+    public void Init(System.Action<SniperSkill> returnAction)
     {
         onReturnToPool = returnAction;
         isAiming = true;
@@ -57,8 +57,8 @@ public class ItemBullet : MonoBehaviour
             }
         }
     }
-
-    public void EndAimMode()
+        
+    public void EndAimMode()//조준 모드 종료
     {
         isAiming = false;
         StopAllCoroutines();

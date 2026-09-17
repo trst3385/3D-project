@@ -286,6 +286,45 @@ ItemBullet 스크립트 추가로 오브젝트 풀링(Object Pooling) 개념을 
 **실행만 되게 했지 아직 남은 '플레이어가 남은 탄수(currentAmmo)와 잔여 시간(lifeTime)을 시각적으로 확인할 수 있는 UI 텍스트/슬라이더 연동 작업' 끝내도록 하자**
 
 
+
+9/17
+특수 스킬(SniperSkill) 잔탄수 UI 연동 및 시스템 안정화
+
+- 특수 스킬(SniperSkill) 잔탄수 실시간 UI 연동.
+   1. SniperSkill 스크립트가 데이터(현재 남은 탄수)를 쥐고 있고, 상태 변화 시 UIManager 스크립트의 공용 메서드를 호출하는 단방향 통신 구조 설계
+   2. UIManager에 UpdateSniperAmmo(int current, int max)와 HideSniperAmmo() 함수 구현 (조준 모드 활성화 시 현재 남은 탄 갯수 UI 텍스트를 띄움)
+   3. 마지막 1발 남았을 때 Color.red로 텍스트 색상을 강조하는 연출 추가
+
+- 코드 가독성 및 아키텍처 리팩토링.
+   1. 포괄적인 이름이었던 UIManager 스크립트의 UpdateUI() 함수의 이름을 역할이 명확히 드러나는 UpdateEnemyCountUI()로 이름 변경 리팩토링 (씬에 현재 처치한 몬스터/등장할 몬스터 수, 보스 몬스터 등장 알림 UI 텍스트)
+   2. 게임 시작 시 SniperAmmoText가 불필요하게 노출되지 않도록 FindUI() 내에서 초기 비활성화(SetActive(false)) 처리 (조준 모드 발동시에 UI 텍스트 등장)
+
+- 예외 처리 및 버그 수정.
+   1. 카운트다운 중 조준 모드 발동 방지: GameManager 스크립트의 IsGameReady 플래그(bool)를 SniperSkillPoolManager.UseSkill()에 연동하여, 게임 시작 전 준비 시간 동안 스킬이 작동되는 문제 차단
+   2. 비활성화 오브젝트 코루틴 에러 해결. SniperSkillPoolManager 스크립트의 InitializePool(): 
+      2-1. 문제: SetActive(false) 상태인 오브젝트 내부에서 코루틴을 돌리려고 하여 Coroutine couldn't be started because the game object is inactive! 에러 발생
+      2-2. 해결: 오브젝트 풀 초기화(InitializePool()) 단계에서는 Init() 및 코루틴 호출을 제외하고 (InitializePool() 함수에 bullet.Init(ReturnToPool); 제거) 실제 사용 시점(UseSkill)에 오브젝트를 켠 후 호출하도록 구조 분리
+      2-3. SniperSkillPoolManager 스크립트가 게임 시작 시(Awake) 미리 오브젝트들을 만들어두려고 InitializePool()을 실행했어, 그때 미리 만들어 둔 총알 오브젝트들을 비활성화 시키려고 bullet.gameObject.SetActive(false);를 먼저 했지
+      2-4. 그런데 그 바로 밑에서 비활성화 상태인 총알의 bullet.Init() 함수를 호출해 버렸고, 그 Init() 내부에서 타이머 코루틴(StartCoroutine(LifeTimer()))을 돌리려고 하니까 유니티가 켜지지 않은(Inactive) 오브젝트라고 빨간 에러를 낸거였어
+      2-5. 그래서 이 문제를 해결하려고 InitializePool() 함수에서는 Init() 호출부를 그냥 지워서(bullet.Init(ReturnToPool); 제거) 그냥 꺼둔 채로 풀에 담아만 두고, 
+      나중에 플레이어가 버튼을 눌러서 실제 사용할 때인 UseSkill() 시점에 오브젝트를 켠(SetActive(true)) 다음에 안전하게 Init()을 호출하도록 구조를 바꿨던 거지
+
+- 오늘의 회고 & 배운 점.
+   1. UI 텍스트 제어는 당연히 SniperSkillPoolManager 매니저 스크립트가 다 해야 한다고 생각했지만, "데이터를 가진 쪽이 신호를 보내고, 뷰(UI) 담당자가 화면을 그린다"는 역할 분담(SRP)의 개념을 코드로 직접 녹여내며 아키텍처의 중요성을 체감
+      1-1. 요약하자면, SniperSkillPoolManager는 SniperSkill의 로직을 "실행 명령"을 내리고, SniperSkill은 "출동해서 자기 몫의 일(탄수 관리, 타이머, 클릭 감지, 공격, UI 통신)을 스스로 처리"하는 구조야
+      1-2. SniperSkill: "탄환의 생명주기와 현재 남은 탄수 데이터"를 직접 들고 있다가 변화가 생기면 UI에 알림 (일반 발사체의 각 오브젝트의 스크립트처럼 사용 후 오브젝트를 삭제(Destroy)하는 역할이 아니야)
+   2. SniperSkillPoolManager의 역할 (창고 관리인): "오브젝트 창고(Pool)를 관리하는 매니저"
+      2-1. 매니저는 켜고 끄는 역할 (관리자): 오브젝트를 미리 만들어 두고, 필요할 때 꺼내서 켜주고(SetActive(true)), 볼일 다 보면 다시 회수해서 꺼주는(SetActive(false)) 창고 문지기이자 생명주기 관리자야
+   3. SniperSkill의 역할 (실제 총알이자 액터): "이 조준 모드 상태에서 실제로 어떤 일이 일어나는지" 모든 규칙과 로직을 수행하는 스크립트
+      3-1. SniperSkill은 실제 작동하는 로직 (주인공): 매니저 손에 의해 세상에 켜지는 순간, 자기 안에 작성된 코드(타이머, 마우스 클릭 감지, 데미지 주기, 잔탄수 깎기, UI 통신 등)를 전부 수행하는 핵심 기능 집합이야
+
+
+**오브젝트 풀링에 대해 자세히 알아보자. 오늘은 스크립트 작성만 했지, 이 기능을 제대로 이해하지 못하고 있어, 큐(Queue/선입선출)도 알아야 하고**
+**조준 모드의 재사용 대기시간 구현+대기시간을 시각적으로도 구현, 골드를 소모해서 사용하게 할지, 대기시간이 끝나면 다시 재사용하게 할지, 웨이브 당 한번씩만 사용하게 할지 정하자**
+**마지막 탄 남았을때 텍스트가 빨간색으로 변하지만 몬스터 스폰 시간 때문에 5발 전부 소모하지 못해서 제대로 확인 못하고 있어. 그래서 몬스터 등장 수, 생성 속도를 늘릴까? 그러면 나무(타워)가 빨리 제거될테고 고민이네;;**
+
+
+
 ***To-Do List***
 //-----외부에서 들었던 포폴, 취업 조언------
 **포폴 적을때 핵심 키워드 글자를 ` ` 만 쓰지말고 색을 바꾼다던가 밑줄 치기**

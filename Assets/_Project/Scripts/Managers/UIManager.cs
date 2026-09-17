@@ -8,6 +8,9 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;//싱글톤 선언
 
+    [Header("SniperAmmoText 연결. 자동연결")]
+    public TextMeshProUGUI SniperAmmoText;//조준 모드때 남은 현재 탄수 텍스트
+
     [Header("PauseWarningText 연결. 자동연결")]
     public TextMeshProUGUI PauseWarningText;//일시정지 불가 등 시스템 경고 텍스트
     private Coroutine warningMessageCoroutine;//일시정지 창 만의 중복 실행 방지용 코루틴 변수
@@ -42,8 +45,8 @@ public class UIManager : MonoBehaviour
     {
         FindUI();//UI 자동찾기
 
-        GameManager.Instance.OnEnemyCountChanged += UpdateUI;//GameManager가 던지는 신호를 구독
-        UpdateUI(0, GameManager.Instance.currentRoundData.enemyCount);//GameManager의 SO 데이터의 enemyCount를 가져와서 실행할 때 초기값 전달
+        GameManager.Instance.OnEnemyCountChanged += UpdateEnemyCountUI;//GameManager가 던지는 신호를 구독
+        UpdateEnemyCountUI(0, GameManager.Instance.currentRoundData.enemyCount);//GameManager의 SO 데이터의 enemyCount를 가져와서 실행할 때 초기값 전달
 
         //라운드가 바뀌면 WaveText UI도 새 데이터에 맞게 초기화
         GameManager.Instance.OnRoundChanged += HandleRoundChanged;
@@ -72,7 +75,7 @@ public class UIManager : MonoBehaviour
         //등록한 모든 이벤트의 구독 해제 짝 맞추기 (메모리 누수 방지), 이거 안 하면 나중에 버그 발생!
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnEnemyCountChanged -= UpdateUI;
+            GameManager.Instance.OnEnemyCountChanged -= UpdateEnemyCountUI;
             GameManager.Instance.OnRoundChanged -= HandleRoundChanged;
             //[구독 해제 명령] 컴퓨터한테 "HandleRoundChanged라는 이름표를 가진 구독을 끊어줘"라고 명령하는 곳
         }
@@ -85,7 +88,7 @@ public class UIManager : MonoBehaviour
     private void HandleRoundChanged(RoundData newData)//9.10 람다식을 대체하기 위해 OnRoundChanged를 위해 추가된 일반 메서드
     {   //HandleRoundChanged() 만든 이유?: 기존에 쓰던 UpdateUI()와 데이터 형태가 안 맞아서 중간에서 데이터를 바꿔줄 메서드가 필요한데,
         //그 메서드에'이름표'를 붙여줘야 메모리 누수를 방지하고 안전하게 해제할 수 있기 때문이야
-        UpdateUI(0, newData.enemyCount);//람다식(이름 없는 일회용 함수)을 쓰면 해제할 때 주소가 달라져서 버그가 생기므로,
+        UpdateEnemyCountUI(0, newData.enemyCount);//람다식(이름 없는 일회용 함수)을 쓰면 해제할 때 주소가 달라져서 버그가 생기므로,
                                         //이렇게 고유한 이름을 가진 일반 메서드로 만들어야 컴퓨터가 정확히 찾아서 구독을 끊을 수 있음
         //OnRoundChanged는 각 라운드 SO의 enemyCount(목표 처치 수)를 알려주는 역할
     }
@@ -138,7 +141,28 @@ public class UIManager : MonoBehaviour
         warningCoroutine = null;//코루틴 변수 초기화
     }
 
-    void UpdateUI(int current, int total)
+    public void UpdateSniperAmmo(int current, int max)//외부(SniperSkill)에서 호출할 공용 메서드 1: 탄수 갱신 및 텍스트 켜기
+    {
+        if (SniperAmmoText != null)
+        {
+            SniperAmmoText.gameObject.SetActive(true);
+            SniperAmmoText.text = $"{current} / {max}";
+
+            if (current == 1)//마지막 1발 남았을 때 빨간색 강조 연출
+                SniperAmmoText.color = Color.red;
+            else
+                SniperAmmoText.color = Color.white;
+        }
+    }
+    public void HideSniperAmmo()//외부(SniperSkill)에서 호출할 공용 메서드 2: 스킬 끝나면 텍스트 숨기기
+    {
+        if (SniperAmmoText != null)
+        {
+            SniperAmmoText.gameObject.SetActive(false);
+        }
+    }
+
+    void UpdateEnemyCountUI(int current, int total)//처치할/등장 수 몬스터, 전부 처치 시 보스 몬스터 등장 텍스트
     {
         if (current >= total)
         {
@@ -153,6 +177,12 @@ public class UIManager : MonoBehaviour
 
     void FindUI()//UI 자동으로 찾기
     {
+        //SniperAmmoText 자동 찾기
+        GameObject sniperAmmoObj = GameObject.Find("SniperAmmoText");
+        if (sniperAmmoObj != null) SniperAmmoText = sniperAmmoObj.GetComponent<TextMeshProUGUI>();
+        else Debug.LogWarning("SniperAmmoText를 찾을 수 없어!");
+        if (SniperAmmoText != null) SniperAmmoText.gameObject.SetActive(false);//게임 시작할 때는 조준 모드가 아니니까 숨겨두기
+
         //PauseWarningText 자동 찾기
         GameObject PauseWarningTextObj = GameObject.Find("PauseWarningText");
         if (PauseWarningTextObj != null) PauseWarningText = PauseWarningTextObj.GetComponent<TextMeshProUGUI>();

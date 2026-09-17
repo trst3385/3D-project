@@ -15,7 +15,13 @@ public class SniperSkill : MonoBehaviour
     {
         onReturnToPool = returnAction;
         isAiming = true;
-        currentAmmo = maxAmmo;//풀에서 꺼내질 때 탄수 초기화!
+        currentAmmo = maxAmmo;//풀에서 꺼내질 때 탄수 초기화
+
+        if (UIManager.Instance != null)//조준 시작 시 UIManager에 초기 탄수 전달 및 텍스트 켜기
+        {
+            UIManager.Instance.UpdateSniperAmmo(currentAmmo, maxAmmo);
+        }
+
         StartCoroutine(LifeTimer());
     }
 
@@ -50,6 +56,11 @@ public class SniperSkill : MonoBehaviour
 
                 currentAmmo--;//몬스터를 맞췄든 아니든(혹은 맞췄을 때만 차감할 수도 있음) 탄수 1발 소모
 
+                if (UIManager.Instance != null)//탄이 소모될 때마다 UIManager에 바뀐 탄수 전달
+                {
+                    UIManager.Instance.UpdateSniperAmmo(currentAmmo, maxAmmo);
+                }
+
                 if (currentAmmo <= 0)//탄을 다 썼다면 조준 모드 종료
                 {
                     EndAimMode();
@@ -62,6 +73,12 @@ public class SniperSkill : MonoBehaviour
     {
         isAiming = false;
         StopAllCoroutines();
+
+        if (UIManager.Instance != null)//조준 모드가 끝났으니 UIManager의 잔탄수 텍스트 숨기기 호출
+        {
+            UIManager.Instance.HideSniperAmmo();
+        }
+
         ReturnToPool();
     }
 

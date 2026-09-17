@@ -27,15 +27,19 @@ public class SniperSkillPoolManager : MonoBehaviour
             SniperSkill bullet = Instantiate(sniperskill, transform);
             bullet.gameObject.SetActive(false);//비활성화 상태로 대기
 
-            //풀로 돌려보내는 콜백(액션) 등록: "나중에 ReturnToPool이 실행되면 이 큐에 다시 넣어줘!"
-            bullet.Init(ReturnToPool);
-
             bulletPool.Enqueue(bullet);
         }
     }
 
     public void UseSkill()//스킬 버튼을 눌렀을 때 외부(UI 버튼 등)에서 호출할 함수
     {
+        //게임 시작 전 카운트다운(준비 상태) 중에는 스킬을 사용할 수 없도록 차단
+        if (GameManager.Instance != null && GameManager.Instance.IsGameReady)
+        {
+            Debug.Log("게임 준비 중에는 조준 스킬을 사용할 수 없습니다!");
+            return;
+        }
+
         if (bulletPool.Count > 0)
         {
             SniperSkill bullet = bulletPool.Dequeue();//풀에서 하나  꺼냄

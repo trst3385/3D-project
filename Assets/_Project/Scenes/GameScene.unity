@@ -3781,6 +3781,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemBulletPoolManager
   sniperskill: {fileID: 5858989681013193899, guid: ec4332826f4cdce41a6820473a0c471d, type: 3}
   poolSize: 5
+  skillCost: 30
+  SniperSkillButton: {fileID: 1597720433}
 --- !u!1001 &1231893316
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ public class SniperSkill : MonoBehaviour
     [SerializeField] private int maxAmmo = 5;    //총 발사 가능한 횟수 (예: 5발)
     private int currentAmmo;                     //현재 남은 탄수
 
-    private System.Action<SniperSkill> onReturnToPool;
+    private System.Action<SniperSkill> onReturnToPool;//풀 반환을 요청할 때 사용하는 콜백 함수 (매니저와 연결고리)
     private bool isAiming = false;//현재 조준 모드 활성화 여부
 
     public void Init(System.Action<SniperSkill> returnAction)

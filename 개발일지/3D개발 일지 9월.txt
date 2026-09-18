@@ -319,10 +319,36 @@ ItemBullet 스크립트 추가로 오브젝트 풀링(Object Pooling) 개념을 
       3-1. SniperSkill은 실제 작동하는 로직 (주인공): 매니저 손에 의해 세상에 켜지는 순간, 자기 안에 작성된 코드(타이머, 마우스 클릭 감지, 데미지 주기, 잔탄수 깎기, UI 통신 등)를 전부 수행하는 핵심 기능 집합이야
 
 
+**SniperSkillPoolManager의 poolSize =1 변수도 다시 보도록 하자. 지금 상태에선 조준모드가 끝나면 다시 사용할 수 있는데 이게 굳이 필요한가 싶어, 아니면 존재해야 하는데 내가 잘 모르는게 있다거나**
 **오브젝트 풀링에 대해 자세히 알아보자. 오늘은 스크립트 작성만 했지, 이 기능을 제대로 이해하지 못하고 있어, 큐(Queue/선입선출)도 알아야 하고**
 **조준 모드의 재사용 대기시간 구현+대기시간을 시각적으로도 구현, 골드를 소모해서 사용하게 할지, 대기시간이 끝나면 다시 재사용하게 할지, 웨이브 당 한번씩만 사용하게 할지 정하자**
 **마지막 탄 남았을때 텍스트가 빨간색으로 변하지만 몬스터 스폰 시간 때문에 5발 전부 소모하지 못해서 제대로 확인 못하고 있어. 그래서 몬스터 등장 수, 생성 속도를 늘릴까? 그러면 나무(타워)가 빨리 제거될테고 고민이네;;**
 
+
+
+9/18
+조준모드 스킬(SniperSkill) 골드 연동 및 오브젝트 풀링 구조 이해
+
+- 경제 시스템 연동 (GameManager & SniperSkillPoolManager): 스킬 사용 시 GameManager.Instance.UseGold() 메서드를 호출하여 골드가 정상적으로 차감되도록 구현
+
+- 스킬 버튼 UX 처리 (interactable).
+   1. SniperSkillPoolManager 스크립트의 Update() 문을 통해 보유 골드와 카운트다운 준비 상태(GameManager.IsGameReady)를 실시간 체크
+   2. 골드 부족 시 조준모드 버튼의 색상 변화로 활성화/비활성화(interactable)가 직관적으로 알 수 있도록 수정
+   3. SniperSkillPoolManager에서 SniperSkillButton 조준모드 버튼의 연결을 UIManager와 같은 Find 패턴과 통일하게 자동찾기로 구현
+
+- 오브젝트 풀링(Object Pooling) 적용 및 최적화.
+   1. SniperSkill의 Queue(선입선출) 자료구조를 이용해 조준 스킬 오브젝트를 파괴(Destroy)하지 않고 재활용하는 구조 구축
+   2. 단발성 조준 스킬(조준 모드를 씬에 하나만 작동) 의 특성에 맞춰SniperSkillPoolManager의 private int poolSize = 1;(동시 활성화 최대 개수)로 설정하여 메모리 낭비 방지
+
+- 주요 개념 학습 및 깨달은 점.
+   1. 맞춰SniperSkillPoolManager. poolSize의 정확한 의미:
+      1-1. 처음에는 "조준 모드를 몇 번 쓸 수 있는지에 대한 총량"이나 "1이니까 조준모드를 한번 쓰고 못쓰는건가? 일회성 횟수"로 오해했으나, "화면에 동시에 존재할 수 있는 최대 개수"를 의미한다는 것을 명확히 이해
+      1-2. 조준 스킬은 동시에 여러 개 뜰 필요가 없으니 poolSize = 1; 로 설정하여 창고에서 껐다 켜며 무한히 재활용하는 것이 최적이야
+   2. 큐(Queue)와 콜백(System.Action<T>)의 역할
+      2-1. 큐를 통해 객체를 순서대로 대기시키고 반납(Enqueue) / 추출(Dequeue)하는 메커니즘 학습 (선입선출)
+      2-2. System.Action<SniperSkill> 대리자를 통해 스킬 객체(SniperSkill)는 오직 자신의 로직(발사/종료)에만 집중하고, 창고 관리자인 SniperSkillPoolManager에게 종료 신호(콜백)를 보내어 객체 반납을 안전하게 위임하는 설계 구조를 이해
+         2-a. SniperSkill: 조준 중일 때 총 쏘고, 데미지 주고, 남은 탄수 계산하고, 끝나면 매니저한테 "나 끝났어!" 하고 신호(콜백)를 보내는 자기 역할만 해
+         2-b. SniperSkillPoolManager: 그 신호를 받아서 진짜 창고(Queue)에 다시 집어넣고 관리하는 역할(풀링)을 전담
 
 
 ***To-Do List***

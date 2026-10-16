@@ -279,10 +279,41 @@ Find 등으로 UI나 스크립트를 찾는 방식에서 DI(의존성 주입)으
 **성능적 타협 (초기화 단계에서의 허용): 매 프레임(Update) 호출하는 Find는 재앙이지만, 게임이 시작될 때(Awake/Start) 딱 한 번만 호출하는 Find는 전체 게임 성능에 미치는 영향이 미미합니다. 작성하신 GameManager 코드처럼요.**
 
 
+
+10/16
+
+이번 주 정리, 추가 할 일 구상.
+
+- Update vs FixedUpdate: "Fixed는 왜 쓸까?".
+- Update와 FixedUpdate를 나누는 핵심 기준은 '프레임(성능)'
+   1. Update() ➔ 컴퓨터 성능에 따라 실행 횟수가 바뀜
+      1-1. 컴퓨터가 좋으면(144Hz) 1초에 144번 켜지고, 구리면(30Hz) 30번만 켜집니다
+      1-2. 그래서 말씀하신 대로 키 입력 감지(Input.GetKeyDown)나 화면 UI 갱신처럼 성능에 따라 부드럽게 보여야 하는 것들을 넣습니다
+- FixedUpdate() ➔ 컴퓨터 성능과 상관없이 '무조건 일정한 간격'으로 실행
+   1. 기본 설정 사양에 따라 일정한 주기(보통 1초에 50번, 0.02초 간격)로 정확하게 실행
+   2. 왜 물리는 여기에 넣을까? 만약 Update에 캐릭터 이동 물리 연산을 넣으면, 좋은 컴퓨터에서는 캐릭터가 엄청나게 빠르게 움직이고 렉 걸리는 컴퓨터에서는 느리게 움직이는 대참사가 일어납니다,
+   프레임 드랍이 생겨도 충돌 연산(Collider)이 벽을 뚫지 않고 일정한 물리 법칙을 유지하도록 Rigidbody 관련 코드(힘 가하기, 속도 제어 등)는 무조건 여기에 넣는 것입니다.
+
+- SniperSkillPoolManager 스크립트의 Update 내의 골드 계산: 기존에는 골드가 바뀌지도 않았는데 매초 60번~144번씩 계속 Update에서 골드를 검사하고 버튼 색을 바꿨습니다. 이를 "골드가 새로 들어오거나 소비될 때만" 딱 한 번씩 확인하게 바꾸는 것이 현업의 방식입니다,
+  대신, 버튼을 새로 갱신해야 하는 '특정 시점'에만 이 함수를 호출합니다, 예: 몬스터를 잡아서 골드가 올랐을 때, 혹은 웨이브가 시작되어 준비 상태가 끝났을 때.
+   1. public void RefreshSkillButton()
+   {
+    if (SniperSkillButton != null && GameManager.Instance != null)
+    {
+        bool canUse = !GameManager.Instance.IsGameReady && GameManager.Instance.CurrentGold >= skillCost;
+        SniperSkillButton.interactable = canUse;
+    }
+   }
+   2. GameManger에서 골드 신호를 이 스크립트의 함수에 호출+옵저버 패턴으로 느슨한 연결
+   3. Awake의 GameObject buttonObj = GameObject.Find("SniperSkillButton"); 의 Find로 UI를 찾는 문제: 이건 휴먼에러 방지를 위한 어쩔 수 없는 선택이야. 이걸 알면서도 사용한 이유를 내가 잘 설명해야해,
+   Update 내에서의 Find는 재앙이지만, 초기화 단계(Awake)에서 딱 한 번 이름을 검증하고 연결하는 것은 전체 런타임 성능에 미치는 영향이 미미하다고 판단
+
+**10/14 "또 이런 방식으로 발전 (수동 연결->싱글톤->Find->DI로 이어지는 개발 성장에 대해서도 최적화에 대한걸로 노션에 새로운 글을 적을 수도 있겠지)"**
 **노션의 문제해결 내용엔 git의 코드로 바로가기 링크도 추가해보자, 지금은 코드 일부만 보여주지 코드 자체를 볼 순 없잖아**
-**System.Action 대리자(콜백) 패턴에 대해 다시 알아보고, 이 오브젝트 풀링과 스킬의 로직 과정을 다시 훑어보자**
+**SniperSkill스크립트에서 사용한 System.Action 대리자(콜백) 패턴에 대해 다시 알아보고, 이 오브젝트 풀링과 스킬의 로직 과정을 다시 훑어보자**
 **3D 작품의 git의 README에도 문제해결 글이 몇 있어서 이걸 토대로 노션에서 추가 해보자**
 **DI(의존성 주입)를 쓰는 방식으로 Find의 단점(최적화) 지옥이나 인스펙터 드래그 앤 드롭 지옥을 어떻게 해결해보기**
+
 
 
 ***To-Do List***

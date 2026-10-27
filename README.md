@@ -4,7 +4,10 @@
 
   현재 핵심 게임 루프(몬스터 웨이브 스폰 및 타워 배치/생존)의 프로토타이핑을 완료한 3D 전략 디펜스(또는 생존) 프로젝트입니다.  
 
-**https://quilted-wolfsbane-760.notion.site/3D-Project-3c10cecbe1f380d7bb0afeb9a8717f68** = 3D프로젝트의 노션 포트폴리오 링크 주소
+<div align="center">
+  <h3>🔗 <a href="https://quilted-wolfsbane-760.notion.site/3D-Project-3c10cecbe1f380d7bb0afeb9a8717f68">상세 포트폴리오 (Notion) 보러가기</a></h3>
+</div>
+
   <p align="center">
   <img src="Images/PlayImage.png" alt="3D 프로젝트 플레이 화면" width="700">
 </p>

@@ -45,6 +45,12 @@ public class UIManager : MonoBehaviour
     {
         FindUI();//UI 자동찾기
 
+        if (GameManager.Instance != null)//GameManager의 골드 이벤트 구독 및 초기값 셋팅(10.29)
+        {
+            GameManager.Instance.OnGoldChanged += UpdateGoldUI;
+            UpdateGoldUI(GameManager.Instance.CurrentGold);//시작할 때 현재 골드 한 번 그려주기
+        }
+
         GameManager.Instance.OnEnemyCountChanged += UpdateEnemyCountUI;//GameManager가 던지는 신호를 구독
         UpdateEnemyCountUI(0, GameManager.Instance.currentRoundData.enemyCount);//GameManager의 SO 데이터의 enemyCount를 가져와서 실행할 때 초기값 전달
 
@@ -62,14 +68,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (GoldText != null && GameManager.Instance != null)//골드 텍스트는 매 프레임 업데이트 (싱글톤 접근)
-        {
-            GoldText.text = $"Gold: {GameManager.Instance.CurrentGold}";
-        }
-    }
-
     void OnDestroy()
     {
         //등록한 모든 이벤트의 구독 해제 짝 맞추기 (메모리 누수 방지), 이거 안 하면 나중에 버그 발생!
@@ -77,7 +75,7 @@ public class UIManager : MonoBehaviour
         {
             GameManager.Instance.OnEnemyCountChanged -= UpdateEnemyCountUI;
             GameManager.Instance.OnRoundChanged -= HandleRoundChanged;
-            //[구독 해제 명령] 컴퓨터한테 "HandleRoundChanged라는 이름표를 가진 구독을 끊어줘"라고 명령하는 곳
+            GameManager.Instance.OnGoldChanged -= UpdateGoldUI;
         }
 
         if (PlacementManager.Instance != null)
@@ -174,6 +172,13 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void UpdateGoldUI(int currentGold)//골드가 바뀔 때만 실행될 가벼운 메서드 (10/29 Update 대체)
+    {
+        if (GoldText != null)
+        {
+            GoldText.text = $"Gold: {currentGold}";
+        }
+    }
 
     void FindUI()//UI 자동으로 찾기
     {

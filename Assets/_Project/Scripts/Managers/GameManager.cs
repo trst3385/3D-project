@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
     public event Action<int, int> OnEnemyCountChanged;//UI한테 "몬스터 처치해서 카운트 올릴게!"라고 알려주는 이벤트
     public event Action OnGameClear;                  //UI한테 "게임 끝났어!"라고 알려주는 이벤트
     public event Action OnBossSpawn;                  //보스 몬스터 등장 이벤트
+    public event Action<int> OnGoldChanged;           //골드가 바뀔 때 현재 골드 값을 알려주는 이벤트
 
     public event Action<RoundData> OnRoundChanged;//다음 라운드 이동 이벤트
     public event Action OnGameOver;//게임 오버 이벤트
@@ -197,6 +198,8 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
         CurrentGold += amount;
         Debug.Log($"골드 획득 성공! 현재 골드: {CurrentGold}");
         //나중에 필요하면 여기에 골드 획득 이벤트도 추가할 수 있어!
+
+        OnGoldChanged?.Invoke(CurrentGold);//구독자들에게 바뀐 골드 전파(UiManager)
     }
 
     public bool UseGold(int amount)//골드를 사용(차감)하는 함수
@@ -206,6 +209,8 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
             CurrentGold -= amount;
             Debug.Log($"골드 차감 성공! 남은 골드: {CurrentGold}");
             //나중에 골드 UI가 바뀌면 여기서 이벤트를 쏴줄 수도 있어!
+
+            OnGoldChanged?.Invoke(CurrentGold);//구독자들에게 바뀐 골드 전파(UiManager)
             return true;
         }
 

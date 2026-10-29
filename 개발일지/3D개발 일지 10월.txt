@@ -428,6 +428,7 @@ Find 등으로 UI나 스크립트를 찾는 방식에서 DI(의존성 주입)으
 
 10/27
 3D작품 노션의  '핵심 로직 구현 & 기술적 문제 해결'에 [Architecture] 오브젝트/UI 참조 방식의 최적화와 오버엔지니어링 경계 (Find vs Tag vs DI) 제목으로 추가.
+3D작품의 READMD에 해당 노션으로 가는 링크 추가
 
 - 핵심 주제 정립: Find vs Tag vs DI 아키텍처 관점의 트레이드오프 분석 및 실용적 타협점 도출.
 - 기술적 판단 근거 구체화:
@@ -439,6 +440,41 @@ Find 등으로 UI나 스크립트를 찾는 방식에서 DI(의존성 주입)으
 - 엔지니어링 철학 및 메타인지 정립: 맹목적인 기술 추종을 지우고, "내 프로젝트의 규모와 목적에 맞는가?"를 기준으로 주체적인 기술을 선택하는 개발자 마인드셋과 트레이드오프 분석 능력을 포트폴리오에 명확히 녹여냈지.
 
 - [Todo 점검] 10/14에 적은 `참조 방식 변화(수동연결->Find->DI)`에 대한 글 작성건은 오늘(10/27) 작성한 [Architecture] 오브젝트/UI 참조 방식의 최적화와 오버엔지니어링 경계 (Find vs Tag vs DI) 문서에 완전히 녹여내어 성공적으로 대체 완결 처리.
+
+
+- 2D 작품의 READMD에만 있던 해당 노션 링크를 3D작품의 READMD에도 추가.
+
+
+10/29
+UIManager와 GameManager 스크립트 간의 골드 갱신 로직 리팩토링 (매 프레임 폴링 방식 제거(Update) 및 이벤트-Driven 패턴 적용)
+
+- 기존 UIManager 스크립트의 Update() 문에서 매 프레임마다 GameManager.Instance.CurrentGold를 참조하여 UI 텍스트를 갱신하고 있었어.
+- 골드는 플레이어의 나무 배치나 보상 획득, Sniper스킬 소모 시에만 변동되는 데이터임에도 불구하고, Update의 매 프레임(초당 60회 이상) 불필요한 렌더링 연산과 메모리 참조가 발생하여 리소스 낭비 및 잠재적 성능 저하 요인.
+- "골드는 매번 바뀔 수 있으니 실시간 감지를 위해 Update에서 처리해야해!" 라는 고정관념에서 비롯된 설계였었지....
+
+- 그래서 간만에 스크립트 수정을 했어. 
+   1. 이벤트 기반 구조(Observer Pattern) 도입: GameManager에 OnGoldChanged 이벤트를 선언하고, 골드가 실제로 변경되는 시점(AddGold, UseGold)에서만 Invoke로 신호를 전파하도록 수정
+   2. UIManager 최적화:
+      2-1. 무거운 Update() 메서드 내 골드 갱신 로직을 제거
+      2-2. 게임 시작(Start) 시 GameManager.Instance.OnGoldChanged += UpdateGoldUI;를 통해 이벤트를 구독하고 초기 골드 값을 세팅
+      2-3. 오브젝트 파괴 시(OnDestroy) 메모리 누수 방지를 위해 이벤트 구독을 안전하게 해제(-=)
+      2-4. 골드 변동 시에만 호출되는 전용 가벼운 메서드 UpdateGoldUI(int currentGold)를 구현하여 실시간성과 효율성을 동시에 확보
+
+- UpdateGoldUI함수에 왜 매개변수 (int currentGold)를 넣었어?
+   1. "그냥 UIManager가 알아서 GameManager.Instance.CurrentGold를 가져다가 쓰면 되는데, 왜 굳이 매개변수 (int currentGold)를 받아서 처리하는 거지?" 하고 의문이 드는 게 당연할거야
+      1-1. if (GoldText != null)  GoldText.text = $"Gold: {GameManager.Instance.CurrentGold}";//GameManager한테 직접 물어보기
+   2. 의존성을 낮추는 설계 (결합도 감소)
+      2-1. 직접 가져오는 방식: UIManager가 항상 GameManager의 몸속을 열어보고 CurrentGold라는 변수를 직접 끄집어내는 형태야. 이러면 **GameManager의 데이터 구조가 바뀔 때 UIManager까지 같이 수정해야 할 위험이 커져**
+      2-2. 매개변수로 받아오는 방식: GameManager는 "나 골드 바꿨어! 새 값은 이거야!" 하고 던져주기만 하고, UIManager는 그 던져준 값만 받아서 화면에 그리기만 하면 돼. 서로의 내부 사정을 깊게 알 필요 없이 딱 필요한 데이터만 깔끔하게 주고받는 이상적인 구조지
+   3. 이 함수를 받는건 OnGoldChanged 이벤트잖아? 이 이벤트는 Action<int> 형식이야. "정수(int) 데이터 하나를 쏙 품고 있는 우편 봉투"를 뜻해
+      3-1. GameManager가 가지고 있는 현재 골드(CurrentGold)도 당연히 int 형식이고, Action<int>가 전달해 주는 바뀐 골드 값도 int 형식이니까 둘의 규격(타입)이 완벽하게 딱 맞아떨어지는 거지
+      3-2. 그래서 GameManager가 골드를 바꾸면서 OnGoldChanged?.Invoke(CurrentGold);라고 할 때, 그 괄호 안에 들어간 CurrentGold라는 int 값을 UIManager가 매개변수 (int currentGold)로 쏙 받아와서 그대로 텍스트에 꽂아준 거지
+   4. 요약하자면. GameManager.Instance.CurrentGold로 직접 접근해서 가져오는 게 틀린 건 아니지만, "이벤트라는 우체부를 통해 바뀐 최신 데이터를 안전하게 건네받는다"는 이벤트-Driven 패턴의 정석을 지키기 위해서 매개변수를 쓰는 거야
+  
+- 간만에 코드 보는데 어때?
+   1. 평소에는, 모든걸 Update에서 안하는걸 알았어도 문득 생각해보니 내 오해가 있더라고. "실시간 변동 데이터는 당연히 Update에서 감지해야 한다"는,
+   무식한 방식의 오해를 깨고, 변화가 일어나는 시점에만 통지하는 이벤트-driven 아키텍처의 필요성을 체감
+   2. 비록 컨디션 난조와 늦은 작업 시작으로 불안감이 엄습했지만, 자책만 하지 않고 실무형 코드 리팩토링을 완수하여 프로젝트의 뼈대를 한 층 더 견고하게 다졌던 날
 
 
 **노션의 문제해결 내용엔 git의 코드로 바로가기 링크도 추가해보자, 지금은 코드 일부만 보여주지 코드 자체를 볼 순 없잖아**

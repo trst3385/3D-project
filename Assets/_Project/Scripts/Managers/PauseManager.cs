@@ -10,6 +10,9 @@ public class PauseManager : MonoBehaviour
     [Header("연결된 UI (자동연결)")]
     public GameObject pausePanel;//일시정지 창 패널
 
+    [Header("사운드 설정")]
+    [SerializeField] private Slider bgmSlider;//ESC 패널 안에 있는 BGM 슬라이더 연결(수동연결)
+
     void Awake()
     {
         if (Instance == null)
@@ -37,6 +40,18 @@ public class PauseManager : MonoBehaviour
                 }
             }
         }
+
+        if (pausePanel != null)//패널을 찾았으니, 그 안(비활성화 상태 포함)에서 BGM 슬라이더 가져오기
+        {
+            //true를 넣어주면 비활성화된 녀석도 찾기
+            bgmSlider = pausePanel.GetComponentInChildren<Slider>(true);
+        }
+        if (bgmSlider != null)//슬라이더 리스너 연결 및 초기화
+        {
+            bgmSlider.onValueChanged.AddListener(OnBGMVolumeChanged);
+            bgmSlider.value = 0.75f;//시작 기본값 설정
+        }
+        else Debug.LogWarning("[PauseManager] BGM Slider를 찾지 못했어!", this);
     }
 
     void Update()//Update에서 Esc 키 감지
@@ -83,5 +98,13 @@ public class PauseManager : MonoBehaviour
         #else
         Application.Quit();//빌드된 실제 게임에서 종료
         #endif
+    }
+
+    private void OnBGMVolumeChanged(float value)//슬라이더 값이 바뀔 때 SoundManager 싱글톤을 호출하는 함수
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.SetBGMVolume(value);
+        }
     }
 }

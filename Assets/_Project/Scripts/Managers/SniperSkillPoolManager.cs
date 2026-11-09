@@ -7,7 +7,7 @@ public class SniperSkillPoolManager : MonoBehaviour
     public static SniperSkillPoolManager Instance;
 
     [Header("Pool Settings")]
-    [SerializeField] private SniperSkill sniperskill;//인스펙터에서 ItemBullet 프리팹 연결
+    [SerializeField] private SniperSkill sniperskill;//인스펙터에서 SniperSkillObject 프리팹 연결
     [SerializeField] private int poolSize = 1;       //풀(창고)에 미리 만들어 둘 오브젝트 개수 (동시 사용 최대 개수)
 
     [Header("스킬 비용 & 버튼UI(자동찾기)")]

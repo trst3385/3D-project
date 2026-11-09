@@ -44,6 +44,22 @@
 
 ---
 
+## 📂 Project Architecture (디렉토리 구조)
+
+이 프로젝트는 관심사 분리(SoC)와 유지보수성을 고려하여 체계적으로 폴더를 관리하고 있습니다.
+
+Assets/_Project
+ ┣ 📂 Scripts https://github.com/trst3385/3D-project/tree/main/Assets/_Project
+ ┃  ┣ 📂 Manager      # GameManager, UIManager, PauseManager 등 전역 시스템 및 싱글톤 관리
+ ┃  ┣ 📂 Enemy        # 몬스터 스탯, AI 이동, 공격 및 웨이브 제어 로직
+ ┃  ┣ 📂 Player       # 플레이어 관련 인터랙션 및 입력 처리
+ ┃  ┣ 📂 MainScene    # 메인 화면 씬 전환 및 UI 네비게이션 제어
+ ┃  ┣ 📂 Tree         # 타워(공격/슬로우 나무) 배치, 인터랙션 및 풀링 시스템
+ ┣ 📂 Scenes          # MainScene, GameScene 등 유니티 씬 아카이브
+ ┗ 📂 Sound           # BGM 및 효과음 리소스 관리
+
+ ---
+
 ## Build History
 
 <details open>

@@ -48,8 +48,8 @@
 
 이 프로젝트는 관심사 분리(SoC)와 유지보수성을 고려하여 체계적으로 폴더를 관리하고 있습니다.
 
-Assets/_Project
- ┣ 📂 Scripts https://github.com/trst3385/3D-project/tree/main/Assets/_Project
+Assets/_Project https://github.com/trst3385/3D-project/tree/main/Assets/_Project
+ ┣ 📂 Scripts
  ┃  ┣ 📂 Manager      # GameManager, UIManager, PauseManager 등 전역 시스템 및 싱글톤 관리
  ┃  ┣ 📂 Enemy        # 몬스터 스탯, AI 이동, 공격 및 웨이브 제어 로직
  ┃  ┣ 📂 Player       # 플레이어 관련 인터랙션 및 입력 처리

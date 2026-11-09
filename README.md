@@ -60,7 +60,10 @@ Assets/_Project
  ┃  ┣ 📂 Tree         # 타워(공격/슬로우 나무) 배치, 인터랙션  시스템
  ┃  ┣ 📂 Data         # 몬스터, 플레이어, 타워의 기본 스탯과 게임 재화 값의 ScriptableObject 에셋 
  ┣ 📂 Scenes          # MainScene, GameScene 등 유니티 씬 아카이브
- ┗ 📂 Sound           # BGM 및 효과음 리소스 관리
+ ┣ 📂 Enemy           # 몬스터의 프리팹과 타워 공격 시 이팩트
+ ┣ 📂 Sound           # BGM 및 효과음 리소스 관리
+ ┗ 📂 ....
+
 ```
  ---
 

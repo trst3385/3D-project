@@ -3,10 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
-    public void LoadGameScene()//함수 자체에 씬 이름을 고정
-    {                          //지금처럼 "GameScene" 으로 이 씬으로만 이동하게 만들었지만,
-                               //하드코딩보단 매개변수로 활용해 버튼의 OnClick()에서 이 함수 하나로 여러씬으로 이동하게 하자
-        SceneManager.LoadScene("GameScene");
+
+    public void LoadGameScene(string sceneName)//11.11 버튼 OnClick() 이벤트의 매개변수로 이동할 씬 이름(string)을 입력받음
+    {                                          
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            SceneManager.LoadScene(sceneName);
+        }
+        else Debug.LogError("이동할 씬 이름이 비어있어! 인스펙터 창을 확인해봐!");
     }
 
     public void QuitGame()//게임 종료 버튼에 연결할 함수

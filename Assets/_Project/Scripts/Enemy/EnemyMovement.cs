@@ -30,9 +30,15 @@ public class EnemyMovement : MonoBehaviour
         //[실제 이동] 계산된 방향(dir)으로 정해진 속도만큼 매 프레임 이동,
         //normalized: 화살표의 길이를 1로 만들어, 거리에 상관없이 일정한 속도로 직선 이동하게 함
         transform.Translate(dir.normalized * speed * Time.deltaTime, Space.World);
-  
-        if (Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
-                             new Vector3(target.position.x, 0, target.position.z)) <= 0.1f)
+
+
+        //----11.13 이동로직을 sqrMagnitude를 적용해서 성능을 최적화----
+        //[거리 판정 최적화] Vector3.Distance 대신 sqrMagnitude 사용 (제곱근 연산 제거)
+        Vector3 currentPos = new Vector3(transform.position.x, 0, transform.position.z);
+        Vector3 targetPos = new Vector3(target.position.x, 0, target.position.z);
+
+        //허용 거리 0.1의 제곱인 0.01f와 비교
+        if ((targetPos - currentPos).sqrMagnitude <= 0.01f)
         {
             currentIndex++;
             if (currentIndex >= waypoints.Count)//마지막 포인트에 도착 시 처리
@@ -40,5 +46,16 @@ public class EnemyMovement : MonoBehaviour
                 onReachedEnd?.Invoke();//OnReachedEnd() 함수의 플레이어에게 데미지를 줌
             }
         }
+        //----------------------이전 방식: Vector3.Distance 내부에서는 정확한 거리를 구하려고 제곱근(루트) 연산을 실행,
+        //이 루트 연산은 매 프레임 모든 몬스터가 실행하기에는 은근히 CPU를 먹는 무거운 연산이야.
+        //if (Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z),
+        //                             new Vector3(target.position.x, 0, target.position.z)) <= 0.1f)
+        //{
+        //    currentIndex++;
+        //    if (currentIndex >= waypoints.Count)//마지막 포인트에 도착 시 처리
+        //    {
+        //        onReachedEnd?.Invoke();//OnReachedEnd() 함수의 플레이어에게 데미지를 줌
+        //    }
+        //}
     }
 }

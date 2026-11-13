@@ -44,7 +44,7 @@ public class EnemyHealth : MonoBehaviour
             GameObject mainCanvas = GameObject.Find("UI Canvas");
             if (mainCanvas != null)
             {
-                //메인 캔버스의 자식으로 체력바 생성
+                //몬스터가 생성될 때마다 "UI Canvas"의 자식으로 체력바 프리팹을 생성(Instantiate)함
                 spawnedHpBar = Instantiate(hpBarPrefab, mainCanvas.transform);
                 hpSlider = spawnedHpBar.GetComponent<Slider>();
                 hpBarRectTransform = spawnedHpBar.GetComponent<RectTransform>();

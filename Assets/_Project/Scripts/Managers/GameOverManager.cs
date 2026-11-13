@@ -51,6 +51,11 @@ public class GameOverManager : MonoBehaviour
     void ShowGameOver()
     {
         gameOverPanel.SetActive(true);
+
+        //11.13 [UI 렌더링 순서 보정] 유니티 캔버스는 하이어라키 하단에 위치할수록 화면 최상단(앞쪽)에 그려짐.
+        //게임오버 창이 켜지는 순간 자식 순서 중 맨 마지막으로 강제 이동시켜, 몬스터 체력바 등 다른 UI보다 무조건 위에 보이도록 처리
+        gameOverPanel.transform.SetAsLastSibling();
+
         Time.timeScale = 0;//게임 일시정지
     }
 

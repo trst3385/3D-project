@@ -82,6 +82,12 @@ public class PauseManager : MonoBehaviour
 
         bool isPaused = !pausePanel.activeSelf;//현재 패널 상태의 반대값을 구함 (켜져 있으면 false, 꺼져 있으면 true)
         pausePanel.SetActive(isPaused);//버튼 클릭, esc 누르면 켜거나 끔 (토글)
+
+        if (isPaused)//[UI 렌더링 순서 보정] 일시정지 창이 켜질 때만 하이어라키 최하단(마지막 자식)으로 순서를 강제 이동시켜,            
+        {            //게임 내 동적 생성되는 몬스터 체력바 등의 요소에 가리지 않고 항상 화면 최상단에 우선 출력되도록 보장함.
+            pausePanel.transform.SetAsLastSibling();
+        }
+
         Time.timeScale = isPaused ? 0f : 1f;//일시정지 중이면 시간을 멈추고0, 아니면 정상 흐름1 으로 복구
     }
 

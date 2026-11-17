@@ -56,12 +56,13 @@ public class EnemyHealth : MonoBehaviour
                     hpSlider.value = currentHealth;
                 }
                 else Debug.LogError("생성된 체력바 프리팹에 Slider 컴포넌트가 없어!");
+
+                spawnedHpBar.SetActive(false);//생성되자마자 체력바 꺼두기(첫 피격 전까지 숨김)
             }
             else Debug.LogWarning("이름이 'UI Canvas'인 오브젝트를 찾을 수 없어!");
         }
         else Debug.LogWarning("EnemyHealth에 hpBarPrefab이 연결되지 않았어!");
     }
-
     void UpdateHpBarPosition()
     {
         if (spawnedHpBar != null && Camera.main != null)
@@ -84,13 +85,18 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int amount)//Bullet 등에 의해 받는 데미지를 입는 함수
+    public void TakeDamage(int amount)//데미지를 입는 함수
     {
         currentHealth -= amount;
 
         if (hpSlider != null)//체력바UI에게 현재 체력을 전달
         {
             hpSlider.value = currentHealth;
+        }
+
+        if (spawnedHpBar != null && !spawnedHpBar.activeSelf)//첫 데미지를 입었을 때 체력바가 꺼져있다면 켜주기
+        {
+            spawnedHpBar.SetActive(true);
         }
 
         if (currentHealth <= 0)//체력이 0 이하면 파괴
@@ -144,10 +150,7 @@ public class EnemyHealth : MonoBehaviour
                     popup.Setup(goldAmount, transform.position);
                 }
             }
-            else
-            {
-                Debug.LogWarning("이름이 'UI Canvas'인 오브젝트를 찾을 수 없어! 캔버스 이름이 맞는지 확인해줘!");
-            }
+            else Debug.LogWarning("이름이 'UI Canvas'인 오브젝트를 찾을 수 없어! 캔버스 이름이 맞는지 확인해줘!");
         }       
     }
 }

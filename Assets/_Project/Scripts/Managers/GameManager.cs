@@ -32,8 +32,8 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
     public int CurrentGold { get; private set; }//외부에서 읽을 수만 있게 보호
     //-----------------
 
-    [Header("게임 시작 연출 UI(UI자동연결)")]
-    [SerializeField] private TextMeshProUGUI readyText;   //UI 텍스트(ReadyText) 연결(자동연결)
+    [Header("게임 시작 카운트 연출 UI(UI수동연결)")]
+    [SerializeField] private TextMeshProUGUI readyText;   //UI 텍스트(ReadyText) 연결
     [SerializeField] private float gameReadyDelay = 3.0f; //시작 전 대기시간. 3초 카운트다운
 
     [SerializeField] private int startRoundIndex = 0;//숫자를 바꿔 실행 시 웨이브 순서 설정(0부터 1웨이브 시작)
@@ -77,14 +77,12 @@ public class GameManager : MonoBehaviour//DontDestroyOnLoad를 쓴 오브젝트�
         }
         else Debug.LogWarning("GameGold SO가 GameManager에 연결되지 않았어!");
 
-        //ReadyText 자동 연결
-        GameObject textObj = GameObject.Find("ReadyText");
-        if (textObj != null)
+        //ReadyText는 인스펙터에서 직접 연결 (비활성 상태여도 안전하게 시작 시 숨김 처리)
+        if (readyText != null)
         {
-            readyText = textObj.GetComponent<TextMeshProUGUI>();
-            readyText.gameObject.SetActive(false);//시작하자마자 일단 숨겨두기
+            readyText.gameObject.SetActive(false);
         }
-        else Debug.LogError("ReadyText를 찾을 수 없어! 이름을 확인해봐.");
+        else Debug.LogWarning("ReadyText가 GameManager에 연결되지 않았어!");
     }
 
     void Start()

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 위해 클래스 이름 옆에 추가.
 {                                             //"너 ITree 약속 지키기로 했지? 그럼 여기에 ITree인터페이스의 GetTreeData 함수를 반드시 만들어",
@@ -19,12 +17,6 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
 
     private float fireCountdown = 0f;//공격 대기 시간
     private Transform target;
-
-
-    void Start()
-    {
-        //8.3 물리 엔진(SphereCollider)을 안 쓰므로 Start는 비워둡니다.                         
-    }
 
     void Update()
     {
@@ -58,9 +50,21 @@ public class AttackTree : MonoBehaviour, ITree//ITree인터페이스 사용을 �
     
     void UpdateTarget()//사거리 안의 적을 찾는 함수, 8.3 물리 대신 순수 수학적 거리 계산으로 가장 가까운 적 찾기
     {
-        //8.8 이전에는 FindObjectsByType로 씬을 뒤져서 Enemy를 찾았기에 부하의 원인이 될 수 있었어
-        //Enemy[] allEnemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-
+        //얼리리턴//
+        if (GameManager.Instance == null)
+        {
+            target = null;
+            Debug.LogWarning("GameManager.Instance가 없어 타겟 탐색을 건너뜀.");
+            return;
+        }
+        if (treeData == null)
+        {
+            target = null;
+            Debug.LogWarning("treeData(SO)가 연결되지 않아 타겟 탐색을 건너뜀.");
+            return;
+        }
+        ////
+   
         var allEnemies = GameManager.Instance.activeEnemies;//1. 씬 전체를 뒤지는 대신, GameManager의 activeEnemies 리스트를 직접 참조
 
         float rangeSq = treeData.Range * treeData.Range;//2. 공격 사거리의 제곱 값 미리 계산 (루트 연산 최적화)

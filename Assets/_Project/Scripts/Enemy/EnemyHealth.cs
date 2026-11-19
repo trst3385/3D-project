@@ -19,6 +19,7 @@ public class EnemyHealth : MonoBehaviour
 
     private Enemy enemyStats;//중심 스크립트의 SO 참조
     private int currentHealth;//현재 체력
+    private bool isDamaged = false;//첫 피격 여부 기록(체력바 생성)
 
     void Awake()
     {
@@ -65,29 +66,27 @@ public class EnemyHealth : MonoBehaviour
     }
     void UpdateHpBarPosition()
     {
-        if (spawnedHpBar != null && Camera.main != null)
+        //얼리리턴. 아직 한 번도 안 맞았으면 체력바가 위치 갱신도 켜지도 않음
+        if (!isDamaged || spawnedHpBar == null || Camera.main == null) return;
+
+        Vector3 worldPos = transform.position + Vector3.down * 1.5f;//몬스터 몸 아래 월드 좌표 (Vector3.up 뒤의 숫자로 높이 조절 가능)
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);//3D 월드 좌표를 모니터 화면(Screen) 기준의 2D 픽셀 좌표로 변환 (몬스터를 따라다니게 하기 위함)
+
+        if (screenPos.z < 0)//카메라 뒤로 갔을 때 UI가 이상하게 튀는 현상 방지
         {
-            //몬스터 몸 아래 월드 좌표 (Vector3.up 뒤의 숫자로 높이 조절 가능)
-            Vector3 worldPos = transform.position + Vector3.down * 1.5f;
-
-            //3D 월드 좌표를 모니터 화면(Screen) 기준의 2D 픽셀 좌표로 변환 (몬스터를 따라다니게 하기 위함)
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-
-            if (screenPos.z < 0)//카메라 뒤로 갔을 때 UI가 이상하게 튀는 현상 방지
-            {
-                spawnedHpBar.SetActive(false);
-            }
-            else
-            {
-                spawnedHpBar.SetActive(true);
-                hpBarRectTransform.position = screenPos;
-            }
+            spawnedHpBar.SetActive(false);
+        }
+        else
+        {
+            spawnedHpBar.SetActive(true);
+            hpBarRectTransform.position = screenPos;
         }
     }
 
     public void TakeDamage(int amount)//데미지를 입는 함수
     {
         currentHealth -= amount;
+        isDamaged = true;//첫 피격 기록
 
         if (hpSlider != null)//체력바UI에게 현재 체력을 전달
         {

@@ -10,13 +10,10 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
         return treeData;
     }
 
-    private List<Transform> enemiesInRange = new List<Transform>();//현재 타워 범위 안에 있는 적들의 Transform을 담아두는 리스트
+    private List<Enemy> enemiesInRange = new List<Enemy>();//현재 타워 범위 안에 있는 적들의 Transform을 담아두는 리스트
+                                                           //11.22 Transform 대신 Enemy 컴포넌트를 직접 캐싱해 매 프레임 GetComponent 호출 방지
+    //private List<Transform> enemiesInRange = new List<Transform>();
 
-
-    void Start()
-    {   
-
-    }
 
     void Update()
     {
@@ -29,6 +26,13 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
 
     void UpdateEnemiesInRange()//8.3일 수정. 물리엔진으로 계산하지 않고 순수 수학적 거리 계산으로 기존과 똑같이 작동하게 수정
     {
+        //씬 단독 테스트나 데이터 누락 시 발생하는 NullReferenceException 방어
+        if (GameManager.Instance == null || GameManager.Instance.activeEnemies == null || treeData == null)
+        {
+            Debug.LogWarning($"[{name}] GameManager 또는 TreeData가 누락되어 타겟 갱신을 중단할게!");
+            return;
+        }
+
         //1. 기존 리스트를 뒤에서부터 검사하며 이미 죽었거나(`null`) 비활성화된 적 미리 솎아내기
         for (int i = enemiesInRange.Count - 1; i >= 0; i--)
         {
@@ -42,18 +46,15 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
         //Enemy[] allEnemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
         var allEnemies = GameManager.Instance.activeEnemies;//2. GameManager의 activeEnemies 리스트를 가져와서 순회
-
         float rangeSq = treeData.SlowRange * treeData.SlowRange;//사거리의 제곱 값을 미리 구해둠(AttackTree와 유사한 방식)
-
 
         foreach (Enemy enemy in allEnemies)//3. 씬에 있는 모든 적들을 하나씩 돌며 거리 비교
         {
             if (enemy == null || !enemy.gameObject.activeInHierarchy) continue;
 
-            Transform enemyTransform = enemy.transform;
 
             //타워와 적 사이의 벡터 거리 구하기 (만약 높이 차이 무시하고 싶다면 dir.y = 0 추가 가능)
-            Vector3 dir = enemyTransform.position - transform.position;
+            Vector3 dir = enemy.transform.position - transform.position;
             dir.y = 0;//2D 평면 거리처럼 X, Z만 비교하고 싶을 때 유용함!
             float distanceSq = dir.sqrMagnitude;//제곱 거리 (피타고라스 정리의 c^2)
 
@@ -61,17 +62,17 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
 
             if (isInRange)
             {
-                if (!enemiesInRange.Contains(enemyTransform))//범위 안에 있는데 기존 리스트에 없다면 새로 추가
+                if (!enemiesInRange.Contains(enemy))//범위 안에 있는데 기존 리스트에 없다면 새로 추가
                 {
-                    enemiesInRange.Add(enemyTransform);
+                    enemiesInRange.Add(enemy);
                 }
             }
             else
             {
-                if (enemiesInRange.Contains(enemyTransform))//범위 밖에 있는데 기존 리스트에 있었다면? -> 범위 밖으로 나간 것!
+                if (enemiesInRange.Contains(enemy))//범위 밖에 있는데 기존 리스트에 있었다면? -> 범위 밖으로 나간 것!
                 {
                     enemy.ResetSpeed();//속도 원복
-                    enemiesInRange.Remove(enemyTransform);//리스트에서 제거
+                    enemiesInRange.Remove(enemy);//리스트에서 제거
                 }
             }
         }
@@ -80,16 +81,14 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
 
     void ApplySlowToAll()
     {
-        //리스트 순회하며 슬로우 적용
-        foreach (Transform enemy in enemiesInRange)
+        if (treeData == null || enemiesInRange.Count == 0) return;//얼리리턴
+
+        //리스트 순회하며 슬로우 적용 (11.22 이미 Enemy 타입이므로 GetComponent 불필요)
+        foreach (Enemy enemy in enemiesInRange)
         {
-            if (enemy != null)
+            if (enemy != null && enemy.gameObject.activeInHierarchy)
             {
-                Enemy e = enemy.GetComponent<Enemy>();
-                if (e != null)
-                {
-                    e.SetSlow(treeData.SlowAmount);
-                }
+                enemy.SetSlow(treeData.SlowAmount);
             }
         }
     }
@@ -98,15 +97,11 @@ public class SlowTree : MonoBehaviour, ITree//AttackTree와 유사한 구조, �
     {                       //OnDestroy: MonoBehaviour를 상속받는 객체가 파괴되기 직전에 마지막으로 호출되는 생명주기 이벤트 함수
 
         //타워가 파괴(Destroy)될 때, 아직 범위 안에 남아있던 모든 적의 속도를 원래대로 복구
-        foreach (Transform enemyTransform in enemiesInRange)
+        foreach (Enemy enemy in enemiesInRange)
         {
-            if (enemyTransform != null)
+            if (enemy != null)
             {
-                Enemy e = enemyTransform.GetComponent<Enemy>();
-                if (e != null)
-                {
-                    e.ResetSpeed();//Enemy 스크립트의 ResetSpeed()
-                }
+                enemy.ResetSpeed();//Enemy 스크립트의 ResetSpeed()
             }
         }
     }

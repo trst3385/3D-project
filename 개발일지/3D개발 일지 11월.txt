@@ -335,6 +335,15 @@ UI 참조 방식 개선 (GameManager.cs)
 **AttackTree 스크립트도 확인 했으니 내일은 SlowTree 스크립트도 체크해주자**
 
 
+
+11/22
+SlowTree 스크립트 리팩토링 및 안전성 보완
+
+- UpdateEnemiesInRange() 함수 진입부에 GameManager.Instance, activeEnemies, treeData 널 체크(Early Return) 및 경고 로그 추가해 씬 단독 테스트·데이터 누락 시 NullReferenceException 방어.
+- enemiesInRange 리스트를 List<Transform>에서 List<Enemy>로 변경해 매 프레임 발생하던 GetComponent<Enemy>() 호출 제거.
+- ApplySlowToAll() 함수 진입부에 얼리 리턴 추가(빈 리스트/데이터 누락 시 조기 종료) 및 미사용 Start() 메서드 제거.
+
+
 **노션의 적을 글 중에 서버와 클라이언트의 서버 연결 일을 차이를 적어두기 "어? 데이터를 서버로 보내나요? 그럼 서버 스크립트도 짜야 하는건가요?" 에 대한 반박과 나의 성찰과 잘못된 오해에 대한 일을 적어보자. 이건 적어도 될지, 안될지 생각해보고("클라이언트가 그것도 구분 못해?") = 라는 오해 생길 수 있으니**
 **노션의 문제해결 내용엔 git의 코드로 바로가기 링크도 추가해보자, 지금은 코드 일부만 보여주지 코드 자체를 볼 순 없잖아**
 **SniperSkill스크립트에서 사용한 System.Action 대리자(콜백) 패턴에 대해 다시 알아보고, 이 오브젝트 풀링과 스킬의 로직 과정을 다시 훑어보자**

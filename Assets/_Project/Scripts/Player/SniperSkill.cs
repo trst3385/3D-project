@@ -9,12 +9,16 @@ public class SniperSkill : MonoBehaviour
     private int currentAmmo;                     //현재 남은 탄수
 
     private System.Action<SniperSkill> onReturnToPool;//풀 반환을 요청할 때 사용하는 콜백 함수 (매니저와 연결고리)
+    private System.Action onSkillFinished;//조준 모드(제한시간 또는 탄 소진)가 끝났음을 매니저에 알리는 콜백
     private bool isAiming = false;//현재 조준 모드 활성화 여부
+    private bool isFinished = false;//조준 종료 처리 중복 실행 방지용(시간 만료·탄 소진 동시 발생 대비)
 
-    public void Init(System.Action<SniperSkill> returnAction)
+    public void Init(System.Action<SniperSkill> returnAction, System.Action finishedAction = null)
     {
         onReturnToPool = returnAction;
+        onSkillFinished = finishedAction;
         isAiming = true;
+        isFinished = false;
         currentAmmo = maxAmmo;//풀에서 꺼내질 때 탄수 초기화
 
         if (UIManager.Instance != null)//조준 시작 시 UIManager에 초기 탄수 전달 및 텍스트 켜기
@@ -71,6 +75,9 @@ public class SniperSkill : MonoBehaviour
         
     public void EndAimMode()//조준 모드 종료
     {
+        if (isFinished) return;
+        isFinished = true;
+
         isAiming = false;
         StopAllCoroutines();
 
@@ -80,6 +87,7 @@ public class SniperSkill : MonoBehaviour
         }
 
         ReturnToPool();
+        onSkillFinished?.Invoke();//조준 모드가 끝난 뒤 재사용 대기시간을 시작할 수 있게 알림
     }
 
     public void ReturnToPool()

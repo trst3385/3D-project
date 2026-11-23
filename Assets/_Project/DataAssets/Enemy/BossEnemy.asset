@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c21b8c6e2b9b9d64fbb60f9e0ee369ed, type: 3}
-  m_Name: Enemy2
+  m_Name: BossEnemy
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  MaxHealth: 20
-  Speed: 7
+  MaxHealth: 40
+  Speed: 10
   Damage: 20
   AttackRange: 5
   AttackInterval: 2

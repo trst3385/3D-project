@@ -108,10 +108,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f3e1bd42ae6b2849a4738765d43476a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  enemyData: {fileID: 11400000, guid: 875d11789147e124aa332fafbfedda32, type: 2}
   waypoints: []
-  isSelected: 0
-  rangeLineRenderer: {fileID: 0}
+  enemyData: {fileID: 11400000, guid: 875d11789147e124aa332fafbfedda32, type: 2}
 --- !u!114 &5572874953393684818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,9 +149,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 911e82d3417886947830e6e425e08f79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
-  treeLayer:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!65 &1020188110535336101
 BoxCollider:
   m_ObjectHideFlags: 0

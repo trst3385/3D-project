@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c21b8c6e2b9b9d64fbb60f9e0ee369ed, type: 3}
-  m_Name: Enemy
+  m_Name: WeakEnemy
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  MaxHealth: 10
-  Speed: 5
-  Damage: 10
+  MaxHealth: 5
+  Speed: 8
+  Damage: 0
   AttackRange: 5
   AttackInterval: 2
   TreeDamage: 1
-  attackEffectPrefab: {fileID: 8194992990867289339, guid: 99bc28c0d45f51c4fbac01080b73edc7, type: 3}
+  attackEffectPrefab: {fileID: 0}
   RewardGold: 10

@@ -65,11 +65,25 @@ public class EnemySpawner : MonoBehaviour
     private void SpawnEnemy()
     {
         RoundData currentData = GameManager.Instance.currentRoundData;//GameManager가 가진 현재 RoundData SO에서 값을 꺼내옴
+        if (currentData == null || spawnPoint == null) return;//얼리리턴
 
-        if (currentData.enemyPrefab != null && spawnPoint != null)
-        {   
+        //1. 이번에 소환할 몬스터 종류 결정 (기본은 normal, 확률에 따라 weak 러시 몬스터 선택)
+        GameObject targetPrefab = currentData.enemyPrefab;
+        EnemyData targetData = currentData.enemyData;
+
+        //rush 프리팹과 데이터가 연결되어 있고, 설정한 확률(rushSpawnChance) 안에 들면 weak 몬스터로 교체
+        if (currentData.rushEnemyPrefab != null &&
+            currentData.rushEnemyData != null &&
+            Random.value < currentData.rushSpawnChance)
+        {
+            targetPrefab = currentData.rushEnemyPrefab;
+            targetData = currentData.rushEnemyData;
+        }
+
+        if (targetPrefab != null && spawnPoint != null)
+        {
             //Waypoint 1번 위치에, 회전값 없이 몬스터 생성
-            GameObject enemyObj = Instantiate(currentData.enemyPrefab, spawnPoint.position, Quaternion.identity);
+            GameObject enemyObj = Instantiate(targetPrefab, spawnPoint.position, Quaternion.identity);
 
             //2. 필요한 컴포넌트들 가져오기
             Enemy enemy = enemyObj.GetComponent<Enemy>();
@@ -77,10 +91,10 @@ public class EnemySpawner : MonoBehaviour
             EnemyMovement movement = enemyObj.GetComponent<EnemyMovement>();
 
             //3. 스포너가 직접 데이터를 넘겨주어 초기화 실행 (Awake나 Start에서 찾지 않도록!)
-            if (currentData.enemyData != null)
+            if (targetData != null)
             {
-                if (enemy != null) enemy.Init(currentData.enemyData);
-                if (enemyHealth != null) enemyHealth.Init(currentData.enemyData);
+                if (enemy != null) enemy.Init(targetData);
+                if (enemyHealth != null) enemyHealth.Init(targetData);
                 if (movement != null) movement.Init(waypointGroup);//몬스터 이동 경로
             }
 

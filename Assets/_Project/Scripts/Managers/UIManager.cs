@@ -159,6 +159,23 @@ public class UIManager : MonoBehaviour
             SniperAmmoText.gameObject.SetActive(false);
         }
     }
+    public void UpdateSniperCooldown(float remainingTime)//조준 종료 후 남은 재사용 대기시간을 SniperAmmoText에 표시
+    {
+        if (SniperAmmoText != null)
+        {
+            SniperAmmoText.gameObject.SetActive(true);
+            SniperAmmoText.color = Color.white;//탄수 1발 남았을 때 빨간색 강조가 남아있을 수 있으므로 흰색으로 복구
+            SniperAmmoText.text = $"{Mathf.CeilToInt(remainingTime)}초";
+        }
+    }
+    public void HideSniperCooldown()//대기시간 끝나면 텍스트 숨기기
+    {
+        if (SniperAmmoText != null)
+        {
+            SniperAmmoText.gameObject.SetActive(false);
+        }
+    }
+
 
     void UpdateEnemyCountUI(int current, int total)//처치할/등장 수 몬스터, 전부 처치 시 보스 몬스터 등장 텍스트
     {

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0d42eb80d307654ab28b919be166816, type: 3}
-  m_Name: 1Round Data
+  m_Name: GameScene2 RoundData
   m_EditorClassIdentifier: Assembly-CSharp::RoundData
-  rushEnemyPrefab: {fileID: 4171945919196011931, guid: 85ca8e31abe45344e9b4a3d513536b39, type: 3}
-  rushEnemyData: {fileID: 11400000, guid: 2c2bc94f03d36c14eacd2265f93b171f, type: 2}
-  rushSpawnChance: 0.5
-  enemyPrefab: {fileID: 8084569729449921211, guid: 46fa949b13a7bd043b4244b13cffd617, type: 3}
-  enemyCount: 20
+  WeaknemyPrefab: {fileID: 4171945919196011931, guid: 85ca8e31abe45344e9b4a3d513536b39, type: 3}
+  WeakEnemyData: {fileID: 11400000, guid: 2c2bc94f03d36c14eacd2265f93b171f, type: 2}
+  enemyCount: 30
   spawnInterval: 1
+  WeakSpawnChance: 0.8
+  enemyPrefab: {fileID: 8084569729449921211, guid: 46fa949b13a7bd043b4244b13cffd617, type: 3}
   enemyData: {fileID: 11400000, guid: e9c862cc103b7ac45a89c2f6e13cee6e, type: 2}
   bossPrefab: {fileID: 4565039326078445810, guid: 6a627fb04bdf17540968627bd8ea9abe, type: 3}
   bossData: {fileID: 11400000, guid: 875d11789147e124aa332fafbfedda32, type: 2}

@@ -1,10 +1,14 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameClearManager : MonoBehaviour
 {
     [Header("GameClearPanel 자동연결")]
     [SerializeField] private GameObject gameClearPanel;
+
+    [Header("다음 씬 설정")]
+    [SerializeField] private string nextSceneName;
 
     void Awake()
     {
@@ -76,8 +80,13 @@ public class GameClearManager : MonoBehaviour
             gameClearPanel.SetActive(false);
         }
 
-        GameManager.Instance.LoadNextRound();//게임 매니저에게 다음 라운드 로직 실행 요청
-
-        Debug.Log("다음 라운드로 이동!");
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("nextSceneName이 비어 있어!");
+        }
     }
 }

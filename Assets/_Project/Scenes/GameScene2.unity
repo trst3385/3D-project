@@ -1444,6 +1444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameClearManager
   gameClearPanel: {fileID: 0}
+  nextSceneName: 
 --- !u!4 &323287866 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6648421545910195553, guid: 474c8e789dbf6a34b84a668e8b451d39, type: 3}
@@ -5971,6 +5972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75653a0fa0eccae498b6ade610824d53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemBulletPoolManager
+  skillCooldown: 20
   sniperskill: {fileID: 5858989681013193899, guid: ec4332826f4cdce41a6820473a0c471d, type: 3}
   poolSize: 5
   skillCost: 30
@@ -8324,13 +8326,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   activeEnemies: []
-  roundDatas:
-  - {fileID: 11400000, guid: 5634a33b55aa6644baf8d5085d83b684, type: 2}
-  - {fileID: 11400000, guid: 042655883f164814c904aaec909e9392, type: 2}
+  roundData: {fileID: 11400000, guid: ba2758bedc7609647a8faa3e6b577b22, type: 2}
   gamegold: {fileID: 11400000, guid: f765d5421a08e7849b6dec738c08fda4, type: 2}
   readyText: {fileID: 658488527}
   gameReadyDelay: 3
-  startRoundIndex: 0
 --- !u!4 &1786257852 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6648421545910195553, guid: 474c8e789dbf6a34b84a668e8b451d39, type: 3}

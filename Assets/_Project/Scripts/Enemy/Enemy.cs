@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     private EnemyAttack attack;//몬스터 공격
 
     [HideInInspector] public EnemyData enemyData;//8.10 Enemy Data SO연결, 외부(스포너)에서 데이터와 필요한 값들을 받아오기 위한 변수
-
+                                                 
 
     void Awake()//8.10 스포너(EnemySpawner)가 중심을 잡고 몬스터에게 데이터를 주입(Init)해 주는 방식으로 변경,
     {           //이젠 Awake에서는 컴포넌트 캐싱만 가볍게 수행

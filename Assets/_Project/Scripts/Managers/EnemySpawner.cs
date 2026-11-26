@@ -72,12 +72,12 @@ public class EnemySpawner : MonoBehaviour
         EnemyData targetData = currentData.enemyData;
 
         //rush 프리팹과 데이터가 연결되어 있고, 설정한 확률(rushSpawnChance) 안에 들면 weak 몬스터로 교체
-        if (currentData.rushEnemyPrefab != null &&
-            currentData.rushEnemyData != null &&
-            Random.value < currentData.rushSpawnChance)
+        if (currentData.WeaknemyPrefab != null &&
+            currentData.WeakEnemyData != null &&
+            Random.value < currentData.WeakSpawnChance)
         {
-            targetPrefab = currentData.rushEnemyPrefab;
-            targetData = currentData.rushEnemyData;
+            targetPrefab = currentData.WeaknemyPrefab;
+            targetData = currentData.WeakEnemyData;
         }
 
         if (targetPrefab != null && spawnPoint != null)

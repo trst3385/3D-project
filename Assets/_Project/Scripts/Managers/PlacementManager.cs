@@ -99,9 +99,11 @@ public class PlacementManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         int layerMask = LayerMask.GetMask("TreeSlot");
 
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
+        RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Infinity, layerMask);//레이가 지나가는 모든 충돌체(RaycastHit[])를 한 번에 가져옴
+        Debug.Log($"클릭 위치 TreeSlot hit 수: {hits.Length}");
+        foreach (RaycastHit hit in hits)
         {
-            TreeSlot slot = hit.collider.GetComponent<TreeSlot>();
+            TreeSlot slot = hit.collider.GetComponentInParent<TreeSlot>();
             if (slot != null)
             {
                 if (treePrefabs[currentSelectedTreeIndex] == null)//나무 프리팹이 연결되지 않았을 경우 오류 처리
@@ -116,15 +118,14 @@ public class PlacementManager : MonoBehaviour
                     return;
                 }
 
-                //나무 배치(골드는 GameManager의 UseGold()로 차감)
-                slot.PlantTree(treePrefabs[currentSelectedTreeIndex]);
-
+                slot.PlantTree(treePrefabs[currentSelectedTreeIndex]);//나무 배치(골드는 GameManager의 UseGold()로 차감)
 
                 //배치 완료 후 초기화
                 isTreeSelected = false;
                 Destroy(currentPreview);
                 currentPreview = null;
                 Debug.Log($"배치 완료! 현재 남은 골드: {GameManager.Instance.CurrentGold}");
+                return;
             }
         }
     }
@@ -132,6 +133,7 @@ public class PlacementManager : MonoBehaviour
     public void SelectTree(int index)//나무 UI버튼에 연결할 함수(OnClick)
     {
         if (Time.timeScale == 0f) return;//게임 시작 전(대기 시간)에는 나무 선택 및 미리보기 생성을 차단
+
 
         int cost = GameManager.Instance.gamegold.treeCost;//GameManager의 SO에서 비용 가져오기
 

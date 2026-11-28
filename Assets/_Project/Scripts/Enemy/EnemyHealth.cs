@@ -106,8 +106,6 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Die() 함수 진입함!");
-
         //1. 몬스터 SO에 설정된 보상 골드 가져오기 (EnemyData에 RewardGold가 있다고 가정)
         //만약 EnemyData에 아직 RewardGold가 없다면 임시로 숫자로 넣어도 돼 (예: 10)
         int rewardGold = enemyStats != null && enemyStats.enemyData != null ? enemyStats.enemyData.RewardGold : 10;
